@@ -1,0 +1,103 @@
+﻿@model EmployeeTracking.Models.News
+@{
+    ViewBag.Title = "NewsDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="content-header">
+    <h1>
+        News Details
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            @using (Html.BeginForm("SaveNews", "News", FormMethod.Post, new { id = "frmNews", enctype = "multipart/form-data" }))
+            {
+                @Html.HiddenFor(model => model.Id)
+                <div class="box">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Title</label>
+                                    @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control", @id = "txtTitle" } })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Venue</label>
+                                    @Html.EditorFor(model => model.Venu, new { htmlAttributes = new { @class = "form-control", @id = "txtVenue" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @rows = 6 })
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <input id="fupNewsImages" type="file" name="fupNewsImages" class="form-control" multiple />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" style="text-align:right;">
+                                    <button id="btnSaveNews" type="button" name="btnSaveNews" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+   
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Images</h3>
+                </div>
+                <div class="box-body">
+                    @if (Model.Image64list != null)
+                    {
+                        using (Html.BeginForm("DeleteNewsImage", "News", new { newsId = Model.Id }, FormMethod.Post, new { id = "frmNewsImgDel", enctype = "multipart/form-data" }))
+                        {
+                            foreach (var item in Model.Image64list)
+                            {
+                                <div style="display: inline-block;">
+                                    <img src="~/@item.Imageb64" style="width:150px; margin:2px;" />
+                                    <div style="text-align: right; margin-top: -41px; padding-right: 10px; padding-bottom: 10px;">
+                                        <button id="btnDelImg_@item.ImageName" name="btnDelImg_@item.ImageName" type="submit" class="btn btn-danger btn-sm btndelimage"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </div>
+
+                            }
+                        }
+
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</section>
+

@@ -1,0 +1,390 @@
+﻿
+@{
+    ACRYPTO.ACRYPTO obj = new ACRYPTO.ACRYPTO();
+    EmployeeTracking.App_Codes._usermanager um = new EmployeeTracking.App_Codes._usermanager();
+    var userRoles = um.GetUserRoles(Session["UserId"].ToString());
+    var module = um.GetMenu(userRoles.FirstOrDefault());
+
+    var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+
+    var fileVersion = Guid.NewGuid().ToString().Replace("-", "");
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sierra Employee Management System</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+
+    <link href="~/Content/AdminLTE.min.css" rel="stylesheet" />
+    <link href="~/Content/skin-blue.min.css" rel="stylesheet" />
+    <link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="../../index2.html" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                <span class="logo-mini"><b>S</b>IoT</span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>SEM</b>S</span>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+
+                        <!-- User Account: style can be found in dropdown.less -->
+                        <li class="dropdown user user-menu" style="max-width: 360px; min-width: 165px;">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="~/@Session["UserImage"].ToString()" class="user-image" alt="User Image">
+                                <span class="hidden-xs">@Session["FullName"].ToString()</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- User image -->
+                                <li class="user-header">
+                                    <img src="~/@Session["UserImage"].ToString()" class="img-circle" alt="User Image">
+                                    <p>
+                                        @Session["FullName"].ToString()
+                                    </p>
+                                </li>
+
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href="@Url.Action("MyProfile", "UserManagement")" class="btn btn-default btn-flat">View Profile</a>
+                                    </div>
+                                    <div class="pull-right">
+                                        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button id="btnSignOut" class="btn btn-default btn-flat">Sign out</button>
+                                        }
+
+                                    </div>
+                                    <div style="margin-top:40px;">
+                                        <button id="btnChangePassword" type="button" class="btn btn-default btn-flat btn-block"><i class="fa fa-fw fa-key"></i>&nbsp;Change Password</button>
+                                    </div>
+
+                                </li>
+                                <li>
+
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- =============================================== -->
+        <!-- Left side column. contains the sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu">
+                    <li class="header">MAIN NAVIGATION</li>
+                    <li>
+                        <a href="/News/Latest">
+                            <i class="fa fa-newspaper-o"></i> <span>News</span>
+                        </a>
+                    </li>
+                    @if (userRoles.FirstOrDefault() != "SuperAdmin")
+                    {
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-clock-o"></i>
+                                <span>Attendance Management</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="/Attendance/LeaveRequests"><i class="fa fa-circle-o"></i> Leave Request</a></li>
+                                <li><a href="/Attendance/In_Out_Corrections"><i class="fa fa-circle-o"></i> In/Out Corrections</a></li>                                
+                            </ul>
+                        </li>
+
+                        if (module.Where(x => x.ModuleId == 13).Count() > 0)
+                        {
+                            foreach (var item in module)
+                            {
+                                if (item.ModuleId == 13)
+                                {
+                                    <li>
+                                        <a href="/Approvals">
+                                            <i class="fa fa-ticket"></i> Approvals
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        }
+
+                        if (module.Where(x => x.ModuleId == 16).Count() > 0 || module.Where(x => x.ModuleId == 17).Count() > 0 || module.Where(x => x.ModuleId == 20).Count() > 0)
+                        {
+                            <li class="treeview">
+                                <a href="#">
+                                    <i class="fa fa-line-chart"></i>
+                                    <span>Reports</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    @foreach (var item in module)
+                                    {
+                                        if (item.ModuleId == 16)
+                                        {
+                                            <li><a href="@Url.Action("LeaveReports", "Reports")"><i class="fa fa-circle-o"></i> Leave Reports</a></li>
+                                            <li><a href="@Url.Action("Leave", "Reports")"><i class="fa fa-circle-o"></i> Leave Details Reports</a></li>
+                                            <li><a href="@Url.Action("MonthlyBreackdownSummery", "Reports")"><i class="fa fa-circle-o"></i> Monthly Breackdown Summery</a></li>
+                                            <li><a href="@Url.Action("MonthlyLeaveSummery", "Reports")"><i class="fa fa-circle-o"></i> Monthly Leave Summery</a></li>
+                                        }
+                                        else if (item.ModuleId == 17)
+                                        {
+                                            <li><a href="@Url.Action("AttendanceReports", "Reports")"><i class="fa fa-circle-o"></i> Attendance Reports</a></li>
+                                            <li><a href="@Url.Action("InOut", "Reports")"><i class="fa fa-circle-o"></i> In Out Details Reports</a></li>
+                                        }
+                                        else if (item.ModuleId == 20)
+                                        {
+                                            <li><a href="@Url.Action("TransferReports", "Reports")"><i class="fa fa-circle-o"></i> Transfer Reports</a></li>
+                                        }
+
+                                    }
+                                </ul>
+                            </li>
+                        }
+
+                        if (module.Where(x => x.ModuleId == 6 || x.ModuleId == 9 || x.ModuleId == 10).Count() > 0)
+                        {
+                            <li class="treeview">
+                                <a href="#">
+                                    <i class="fa fa-bank"></i>
+                                    <span>Company Management</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    @foreach (var item in module)
+                                    {
+                                        if (item.ModuleId == 6)
+                                        {
+                                            <li><a href="/Companies"><i class="fa fa-circle-o"></i> Company Management</a></li>
+                                        }
+                                        else if (item.ModuleId == 9)
+                                        {
+                                            <li><a href="/Divisions"><i class="fa fa-circle-o"></i> Division Management</a></li>
+                                        }
+                                        else if (item.ModuleId == 10)
+                                        {
+                                            <li><a href="@Url.Action("Teams", "Divisions", new { id = obj.Encrypt("0") })"><i class="fa fa-circle-o"></i> Team Management</a></li>
+                                        }
+                                    }
+                                </ul>
+                            </li>
+                        }
+
+                        if (module.Where(x => x.ModuleId == 7 || x.ModuleId == 11 || x.ModuleId == 12 || x.ModuleId == 15).Count() > 0)
+                        {
+                            <li class="treeview">
+                                <a href="#">
+                                    <i class="fa fa-users"></i>
+                                    <span>User Management</span>
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                </a>
+                                <ul class="treeview-menu">
+                                    @foreach (var item in module)
+                                    {
+                                        if (item.ModuleId == 7)
+                                        {
+                                            <li><a href="/UserManagement/UserLevels"><i class="fa fa-circle-o"></i> User Levels</a></li>
+                                        }
+                                        else if (item.ModuleId == 11)
+                                        {
+                                            <li><a href="/UserManagement"><i class="fa fa-circle-o"></i> User Profiles</a></li>
+                                        }
+                                        else if (item.ModuleId == 12)
+                                        {
+                                            <li><a href="/UserManagement/AttendanceHistory"><i class="fa fa-circle-o"></i> Attendance History</a></li>
+                                            <li><a href="/UserManagement/Leaves"><i class="fa fa-circle-o"></i> Leave Management</a></li>
+                                            <li><a href="/UserManagement/LeaveHistory"><i class="fa fa-circle-o"></i> Leave History</a></li>
+                                            <li><a href="/UserManagement/EnforceUserLeave"><i class="fa fa-circle-o"></i> Enforce User Leave</a></li>
+                                        }
+                                        else if (item.ModuleId == 15)
+                                        {
+                                            <li><a href="/UserManagement/Transfers"><i class="fa fa-circle-o"></i> Employee Transfers</a></li>
+                                        }
+                                    }
+
+                                </ul>
+                            </li>
+                        }
+
+                    }
+                    else
+                    {
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-clock-o"></i>
+                                <span>Attendance Management</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="/Attendance/LeaveRequests"><i class="fa fa-circle-o"></i> Leave Request</a></li>                                
+                                <li><a href="/Attendance/In_Out_Corrections"><i class="fa fa-circle-o"></i> In/Out Corrections</a></li>                                
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="/Approvals">
+                                <i class="fa fa-ticket"></i> Approvals
+                            </a>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-line-chart"></i>
+                                <span>Reports</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("LeaveReports", "Reports")"><i class="fa fa-circle-o"></i> Leave Reports</a></li>
+                                <li><a href="@Url.Action("Leave", "Reports")"><i class="fa fa-circle-o"></i> Leave Details Reports</a></li>
+                                <li><a href="@Url.Action("MonthlyBreackdownSummery", "Reports")"><i class="fa fa-circle-o"></i> Monthly Breackdown Summery</a></li>
+                                <li><a href="@Url.Action("MonthlyLeaveSummery", "Reports")"><i class="fa fa-circle-o"></i> Monthly Leave Summery</a></li>
+                                <li><a href="@Url.Action("AttendanceReports", "Reports")"><i class="fa fa-circle-o"></i> Attendance Reports</a></li>
+                                <li><a href="@Url.Action("InOut", "Reports")"><i class="fa fa-circle-o"></i> In Out Details Reports</a></li>
+                                <li><a href="@Url.Action("TransferReports", "Reports")"><i class="fa fa-circle-o"></i> Transfer Reports</a></li>
+                            </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-bank"></i>
+                                <span>Company Management</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="/Companies"><i class="fa fa-circle-o"></i> Company Management</a></li>
+                                <li><a href="/Divisions"><i class="fa fa-circle-o"></i> Division Management</a></li>
+                                <li><a href="@Url.Action("Teams", "Divisions", new { id = obj.Encrypt("0") })"><i class="fa fa-circle-o"></i> Team Management</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-users"></i>
+                                <span>User Management</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="/UserManagement"><i class="fa fa-circle-o"></i> User Profiles</a></li>
+                                <li><a href="/UserManagement/UserLevels"><i class="fa fa-circle-o"></i> User Levels</a></li>
+                                <li><a href="/UserManagement/Leaves"><i class="fa fa-circle-o"></i> Leave Management</a></li>
+                                <li><a href="/UserManagement/AttendanceHistory"><i class="fa fa-circle-o"></i> Attendance History</a></li>
+                                <li><a href="/UserManagement/LeaveHistory"><i class="fa fa-circle-o"></i> Leave History</a></li>
+                                <li><a href="/UserManagement/EnforceUserLeave"><i class="fa fa-circle-o"></i> Enforce User Leave</a></li>
+                                <li><a href="/UserManagement/Transfers"><i class="fa fa-circle-o"></i> Employee Transfers</a></li>
+                                
+                            </ul>
+                        </li>
+
+                    }
+                    
+                </ul>
+                
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- =============================================== -->
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            @RenderBody()
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+        @*<footer class="main-footer">
+                <div class="pull-right hidden-xs">
+                    <b>Version</b> 1.0
+                </div>
+                <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            </footer>*@
+    </div>
+
+    @using (Html.BeginForm("ChangePassword", "UserManagement", FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmChangePassword" }))
+    {
+
+    <!-- Modal -->
+        <div class="modal fade" id="newPsswordModal" tabindex="-1" role="dialog" aria-labelledby="newPsswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="newPsswordModalLabel">Change Password</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @Html.AntiForgeryToken()
+                        <div class="from-group">
+                            <label>Current Password</label>
+                            <input id="txtCurrentPassword" name="txtCurrentPassword" type="password" class="form-control" />
+                        </div>
+                        <div class="from-group">
+                            <label>New Password</label>
+                            <input id="txtNewPassword" name="txtNewPassword" type="password" class="form-control" />
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="btnSavePassword" type="button" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <script src="~/Scripts/app.min.js"></script>
+    <script src="~/plugins/fastclick/fastclick.min.js"></script>
+    <script src="~/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <script src="~/Scripts/site.js?v=@fileVersion"></script>
+    <script src="~/plugins/toastr/toastr.min.js"></script>
+    <script src="~/Scripts/noti.js?v=@fileVersion"></script>
+
+    <script>
+        @Html.Raw(ViewBag.erMsg)
+    </script>
+</body>
+</html>

@@ -1,0 +1,664 @@
+﻿@model EmployeeTracking.Models.UserProfileViewModel
+@{
+    ViewBag.Title = "UserProfile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.UserId = Model.ApplicationUser.Id;
+    EmployeeTracking.App_Codes._usermanager um = new EmployeeTracking.App_Codes._usermanager();
+
+    bool Canedit = EmployeeTracking.App_Codes._usermanager.UserCanEdit(User.Identity.Name);
+    
+    EmployeeTracking.App_Codes._reports rpt = new EmployeeTracking.App_Codes._reports();
+    var siteLst = rpt.GetAllSiteLocations();
+}
+
+<input id="hfCanEdit" value="@Canedit" type="hidden" />
+<input type="hidden" id="hfUserId" value="@Model.ApplicationUser.Id" />
+<input id="hfAwardId" type="hidden" value="0" />
+<input id="hfPromotionsId" type="hidden" value="0" />
+<input id="hfExperianceId" type="hidden" value="0"/>
+<link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
+<link href="~/plugins/easy-autocomplete-1.3.5/easy-autocomplete.min.css" rel="stylesheet" />
+
+<section class="content-header">
+    <h1>
+        User Profile
+    </h1>
+    
+    
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Profile Image -->
+            <div class="box box-primary">
+                <div class="box-body box-profile">
+                    <img id="userImg_@Model.ApplicationUser.Id" class="profile-user-img img-responsive img-circle editprofileimage" src="/@Model.UserProfiles.Image" alt="User profile picture">
+                    <h3 class="profile-username text-center">@Model.UserProfiles.FirstName&nbsp;@Model.UserProfiles.LastName</h3>
+                    @*@if (Model.EmployeementInfos != null)
+                    {
+                        <p class="text-muted text-center">@um.GetRole(Model.ApplicationUser.Roles.FirstOrDefault().RoleId).RoleName</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">Not Defined</p>
+                    }*@
+                    <p class="text-muted text-center">@um.GetRole(Model.ApplicationUser.Roles.FirstOrDefault().RoleId).RoleName</p>
+                    <ul class="list-group list-group-unbordered">
+                        <li class="list-group-item">
+                            @if (Model.UserProfiles.EmployeeId != null)
+                            {
+                                <b>EPF No</b> <a class="pull-right">@Model.UserProfiles.EmployeeId</a>
+                            }
+                            else
+                            {
+                                <b>EPF No</b> <a class="pull-right">Not Defined</a>
+                            }
+
+                        </li>
+                        <li class="list-group-item">
+                            @if (Model.UserProfiles.DateOfBirth != null)
+                            {
+                                <b>Date of Birth</b> <a class="pull-right">@Model.UserProfiles.DateOfBirth.Value.ToShortDateString()</a>
+                            }
+                            else
+                            {
+                                <b>Date of Birth</b> <a class="pull-right">Not Defined</a>
+                            }
+                        </li>
+                        <li class="list-group-item">
+                            @{
+                                int age = 0;
+                                if (Model.UserProfiles.DateOfBirth != null)
+                                {
+                                    age = (DateTime.Now.Year - Model.UserProfiles.DateOfBirth.Value.Year);
+                                    <b>Age</b> <a class="pull-right">@age</a>
+                                }
+                                else
+                                {
+                                    <b>Age</b> <a class="pull-right">Not Defined</a>
+                                }
+                            }
+
+
+                        </li>
+                        <li class="list-group-item">
+                            @if (Model.UserProfiles.Gender != null)
+                            {
+                                <b>Gender</b> <a class="pull-right">@Model.UserProfiles.Gender</a>
+                            }
+                            else
+                            {
+                                <b>Gender</b> <a class="pull-right">Not Defined</a>
+                            }
+                        </li>
+                        <li class="list-group-item">
+                            @if (Model.UserProfiles.MaritalStatus != null)
+                            {
+                                <b>Marital Status</b> <a class="pull-right">@Model.UserProfiles.MaritalStatus</a>
+                            }
+                            else
+                            {
+                                <b>Marital Status</b> <a class="pull-right">Not Defined</a>
+                            }
+                        </li>
+                        <li class="list-group-item">
+                            @if (Model.UserProfiles.NICNo != null)
+                            {
+                                <b>NIC No</b> <a class="pull-right">@Model.UserProfiles.NICNo</a>
+                            }
+                            else
+                            {
+                                <b>NIC No</b> <a class="pull-right">Not Defined</a>
+                            }
+                        </li>
+                    </ul>
+                    @if (Canedit)
+                    {
+                        <a href="#" id="btnEditUserProfile" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i>&nbsp;<b>Edit</b></a>
+                        <a href="#" id="btnPassword" class="btn btn-danger btn-block"><i class="fa fa-fw fa-key"></i>&nbsp;<b>Reset Password</b></a>
+                    }
+                    
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->           
+        </div>
+        <!-- /.col -->
+        <div class="col-md-9">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tabContactInfo" data-toggle="tab">Contact Info</a></li>
+                    <li><a href="#tabEmployeeInfo" data-toggle="tab">Current Job Information</a></li>
+                    <li><a href="#tabEducationalInfo" data-toggle="tab">Educational Info</a></li>
+                    <li><a href="#tabAwards" data-toggle="tab">Awards</a></li>
+                    <li><a href="#tabPromotions" data-toggle="tab">Promotions</a></li>
+                    <li><a href="#tabExperiance" data-toggle="tab">Experience</a></li>
+
+                </ul>
+                <div class="tab-content">
+                    <div class="active tab-pane" id="tabContactInfo">
+                        @using (Html.BeginForm("UpdateContactInfo", "UserManagement", new { UserId = ViewBag.UserId }, FormMethod.Post, new { id = "frmContactInfo" }))
+                        {
+                            <div class="form-group">
+                                <label>Email</label>
+                                @Html.EditorFor(model => model.ApplicationUser.Email, new { htmlAttributes = new { @class = "form-control emailadress" } })
+                            </div>
+                            <div class="form-group">
+                                <label>Fixed Telephone No</label>
+                                @Html.EditorFor(model => model.ApplicationUser.PhoneNumber, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile</label>
+                                @Html.EditorFor(model => model.ApplicationUser.MobileNumber, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile Account</label>
+                                @Html.EditorFor(model => model.ApplicationUser.MobileAccount, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="form-group">
+                                <label>Fax</label>
+                                @Html.EditorFor(model => model.ApplicationUser.FaxNumber, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                @Html.TextAreaFor(model => model.ApplicationUser.Address, new { @class = "form-control", @rows = 6 })
+                            </div>
+                            if (Canedit)
+                            {
+                                <div class="form-group" style="text-align:right;">
+                                    <button id="btnSaveContactInfo" class="btn btn-primary" type="submit"><i class="fa fa-save"></i>&nbsp;Save Details</button>
+                                </div>
+                            }
+
+                        }
+
+
+                    </div>
+                    <!-- /.tab-pane -->
+
+                    <div class="tab-pane" id="tabEmployeeInfo">
+                        @using (Html.BeginForm("UpdateEmployeementInfo", "UserManagement", new { UserId = ViewBag.UserId }, FormMethod.Post))
+                        {
+                            <div class="form-group">
+                                <label>Project</label>
+                                @if (Canedit)
+                                {
+                                    @Html.DropDownListFor(model => model.EmployeementInfos.Project.Id, Model.UserDivisions, new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(model => model.EmployeementInfos.Project.Id, Model.UserDivisions, new { @class = "form-control", @disabled = true })
+                                }
+
+                            </div>
+                            <div class="form-group">
+                                <label>Division Code</label>
+                                @Html.DropDownListFor(model => model.EmployeementInfos.DivisionCode, Model.DivisionCodes, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>Section</label>
+                                @Html.EditorFor(model => model.EmployeementInfos.Section, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="form-group">
+                                <label>Designation</label>
+                                @Html.EditorFor(model => model.EmployeementInfos.Designation, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="form-group">
+                                <label>Job Description</label>
+                                @Html.EditorFor(model => model.EmployeementInfos.JobDescription, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="form-group">
+                                <label>Site Location</label>
+                                @Html.EditorFor(model => model.EmployeementInfos.PresentReportingLocation, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+
+                            @*<div class="form-group">
+                                <label>Location</label>
+                                <select id="Location" name="Location" class="form-control">
+                                    <option value="0" selected>[All Locations]</option>
+                                    @foreach (var item in siteLst)
+                                    {
+                                        <option value="@item.Id">@item.Location</option>
+                                    }
+                                </select>
+                                @Html.HiddenFor(m => m.LocationName)
+                            </div>*@
+
+
+                            <div class="form-group">
+                                <label>Immediate Reporting Person</label>
+                                @{
+                                    var supervisors = um.GetSupervisorList(Model.ApplicationUser.Id);
+                                }
+
+                                @if (Canedit)
+                                {
+                                    if (supervisors != null)
+                                    {
+                                        @Html.DropDownListFor(model => model.EmployeementInfos.SupervisorId, supervisors, new { @class = "form-control" })
+                                    }
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(model => model.EmployeementInfos.SupervisorId, supervisors, new { @class = "form-control", @disabled = true })
+                                }
+
+                            </div>
+                            <div class="form-group">
+                                <label>Appointment Date</label>
+                                @if (Model.EmployeementInfos.AppointmentDate.HasValue)
+                                {
+                                    @Html.EditorFor(model => model.EmployeementInfos.AppointmentDate, new { htmlAttributes = new { @class = "form-control date", @Value = Model.EmployeementInfos.AppointmentDate.Value.ToShortDateString() } })
+                                }
+                                else
+                                {
+                                    @Html.EditorFor(model => model.EmployeementInfos.AppointmentDate, new { htmlAttributes = new { @class = "form-control date" } })
+                                }
+
+                            </div>
+                            @*<div class="form-group">
+                <label>Present Reporting Location</label>
+                @Html.EditorFor(model => model.EmployeementInfos.PresentReportingLocation, new { htmlAttributes = new { @class = "form-control" } })
+            </div>*@
+                            if (Canedit)
+                            {
+                                <div class="form-group" style="text-align:right;">
+                                    <button id="btnSaveEmployeeInfo" class="btn btn-primary" type="submit"><i class="fa fa-save"></i>&nbsp;Save Details</button>
+                                </div>
+                            }
+
+                        }
+                    </div>
+                    <!-- /.tab-pane -->
+                    <div class="tab-pane" id="tabEducationalInfo">
+                        @using (Html.BeginForm("UpdateEducationalInfo", "UserManagement", new { UserId = ViewBag.UserId }, FormMethod.Post))
+                        {
+                            <div class="form-group">
+                                <label>Secondary Education</label>
+                                @Html.EditorFor(model => model.EducationalInfos.Secondary, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="form-group">
+                                <label>Higher Education</label>
+                                @Html.EditorFor(model => model.EducationalInfos.Other, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            @*<div class="form-group">
+                                <label>Other</label>
+                                @Html.EditorFor(model => model.EducationalInfos.Other, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>*@
+                            <div class="form-group">
+                                <label>Extra Curricular</label>
+                                @Html.EditorFor(model => model.EducationalInfos.ExtraCurricular, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            if (Canedit)
+                            {
+                                <div class="form-group" style="text-align:right;">
+                                    <button id="btnSaveEducationalInfo" class="btn btn-primary" type="submit"><i class="fa fa-save"></i>&nbsp;Save Details</button>
+                                </div>
+                            }
+
+                        }
+                    </div>
+                    <div class="tab-pane" id="tabAwards">
+                        @if (Canedit)
+                        {
+                            <div style="text-align:right; margin-bottom:20px;"><button id="btnAward" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;Add Awards</button></div>
+                        }
+                        
+                        <table id="tblAwards" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyAwards">
+                               
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="tabPromotions">
+                        @if (Canedit)
+                        {
+                            <div style="text-align:right; margin-bottom:20px;"><button id="btnPromotions" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;Add Promotions</button></div>
+                        }
+                        <table id="tblPromotion" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Designation</th>
+                                    <th>Date From</th>
+                                    <th>Date To</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Remarks</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyPromotions"></tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="tabExperiance">
+                       @if (Canedit)
+                       {
+                        <div style="text-align:right; margin-bottom:20px;"><button id="btnExperiance" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;Add Experience</button></div>
+                       }
+                        <table id="tblExperiance" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Organization</th>
+                                    <th>Designation</th>
+                                    <th>Date From</th>
+                                    <th>Date To</th>                                    
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodExperiance"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- /.tab-content -->
+            </div>
+            <!-- /.nav-tabs-custom -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+
+@using (Html.BeginForm("UpdateUserProfile", "UserManagement", new { UserId = ViewBag.UserId }, FormMethod.Post, new { id = "frmUserProfile" }))
+{
+        <!--New User Profile Modal====================================-->
+    <div class="modal fade" id="UserProfileModal" tabindex="-1" role="dialog" aria-labelledby="UserProfileModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="UserProfileModalLabel"><i class="fa fa-user"></i>&nbsp;User Profile</h4>
+                </div>
+                <div class="modal-body">
+                    @Html.HiddenFor(model => model.UserProfiles.Image)
+                    <div class="form-group">
+                        <label>User Level</label>
+                        @{
+                            var lstRoles = um.UserRolesSelect();
+                        }
+                        @Html.DropDownListFor(model => Model.UserProfiles.UserRole, lstRoles, new { @class = "form-control" })
+                        
+                    </div>
+                    <div class="form-group">
+                        <label>EPF No</label>
+                        @Html.EditorFor(model => model.UserProfiles.EmployeeId, new { htmlAttributes = new { @class = "form-control", @id = "txtEPFNo" } })
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        @Html.EditorFor(model => model.UserProfiles.FirstName, new { htmlAttributes = new { @class = "form-control fullname" } })
+                    </div>
+                    @*<div class="form-group">
+                        <label>Last Name</label>
+                        @Html.EditorFor(model => model.UserProfiles.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>*@
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        @if (Model.UserProfiles.DateOfBirth != null)
+                        {
+                            @Html.EditorFor(model => model.UserProfiles.DateOfBirth, new { htmlAttributes = new { @class = "form-control date", @Value = Model.UserProfiles.DateOfBirth.Value.ToShortDateString(), @id = "txtUserDOB" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.UserProfiles.DateOfBirth, new { htmlAttributes = new { @class = "form-control date", @id = "txtUserDOB" } })
+                        }
+
+                    </div>
+                    <div class="form-group">
+                        <label>Age</label>
+                        @{
+                            <input name="Age" class="form-control" type="number" value="@age" />
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        @{
+                            List<SelectListItem> lstGender = new List<SelectListItem>();
+                            lstGender.Add(new SelectListItem { Value = "Male", Text = "Male" });
+                            lstGender.Add(new SelectListItem { Value = "Female", Text = "Female" });
+                        }
+                        @Html.DropDownListFor(model => model.UserProfiles.Gender, lstGender, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        <label>Marital Status</label>
+                        @{
+                            List<SelectListItem> lstMaritalStatus = new List<SelectListItem>();
+                            lstMaritalStatus.Add(new SelectListItem { Value = "Married", Text = "Married" });
+                            lstMaritalStatus.Add(new SelectListItem { Value = "Single", Text = "Single" });
+                        }
+                        @Html.DropDownListFor(model => model.UserProfiles.MaritalStatus, lstMaritalStatus, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        <label>NIC No</label>
+                        @Html.EditorFor(model => model.UserProfiles.NICNo, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                @if (Canedit)
+                {
+                    <div class="modal-footer">
+                        <button id="btnSaveUserProfile" name="btnSaveUserProfile" type="button" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                }
+                
+            </div>
+
+        </div>
+    </div>
+    <!-- End New User Profile Level Modal====================================-->
+
+                            }
+@using (Html.BeginForm("UpdateUserImage", "UserManagement", new { UserId = ViewBag.UserId }, FormMethod.Post, new { id = "frmNewUser", enctype = "multipart/form-data" }))
+{
+        <!--New User Modal====================================-->
+    <div class="modal fade" id="UserImageModal" tabindex="-1" role="dialog" aria-labelledby="UpdateUserImageModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="UpdateUserImageModalLabel"><i class="fa fa-user-plus"></i>&nbsp;Change Profile Image</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Select Image</label>
+                        <input id="fupProfileImage" name="fupProfileImage" type="file" class="form-control" accept=".png" />
+                    </div>
+
+                </div>
+                @if (Canedit)
+                {
+                    <div class="modal-footer">
+                        <button id="btnSaveImage" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                }
+                
+            </div>
+
+        </div>
+    </div>
+    <!-- End New User Modal====================================-->
+
+}
+
+<!--Awards Modal====================================-->
+<div class="modal fade" id="UserAwardsModal" tabindex="-1" role="dialog" aria-labelledby="UserAwardsModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="UserAwardsModalLabel"><i class="fa fa-user-plus"></i>&nbsp;Add New Award</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Award Name</label>
+                    <input id="txtUserAward" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input id="txtAwardDate" class="form-control date" />
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    @Html.TextArea("txtAwardDescription", new { @class = "form-control", @rows = 6, @id = "txtAwardDescription" })
+
+                </div>
+
+            </div>
+            @if (Canedit)
+            {
+                <div class="modal-footer">
+                    <button id="btnSaveAward" type="button" class="btn btn-primary"><i class="fa fa-save saveaward"></i>&nbsp;Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            }
+            
+        </div>
+
+    </div>
+</div>
+<!-- End Awards Modal====================================-->
+
+<!--Promotions Modal====================================-->
+<div class="modal fade" id="UserPromotionsModal" tabindex="-1" role="dialog" aria-labelledby="UserPromotionsModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="UserPromotionsModalLabel"><i class="fa fa-user-plus"></i>&nbsp;Add New Promotion</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Designation</label>
+                    <input id="txtPromoDesignation" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Date From</label>
+                    <input id="txtPromoDateFrom" class="form-control date" />
+                </div>
+                <div class="form-group">
+                    <label>Date To</label>
+                    <input id="txtPromoDateTo" class="form-control date" />
+                </div>
+                <div class="form-group">
+                    @{
+                        EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
+                        var divisions = pr.GetProjects();
+                     }
+                    <label>Division</label>
+                    <select id="ddlPromoDivision" class="form-control">
+                        @foreach (var item in divisions)
+                        {
+                            <option value="@item.ProjectName">@item.ProjectName</option>
+                        }
+                    </select>
+
+                </div>
+                <div class="form-group">
+                    <label>Reporting Location</label>
+                    <input id="txtPromoLocation" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Remarks</label>
+                    @Html.TextArea("txtpromoRemarks", new { @class = "form-control", @rows = 6, @id = "txtpromoRemarks" })
+
+                </div>
+
+            </div>
+            @if (Canedit)
+            {
+                <div class="modal-footer">
+                    <button id="btnSavePromotions" type="button" class="btn btn-primary"><i class="fa fa-save saveapromo"></i>&nbsp;Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            }
+            
+        </div>
+
+    </div>
+</div>
+<!-- End Promotions Modal====================================-->
+
+<!--Organization Modal====================================-->
+<div class="modal fade" id="UserExperianceModal" tabindex="-1" role="dialog" aria-labelledby="UserExperianceModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="UserExperianceModalLabel"><i class="fa fa-user-plus"></i>&nbsp;Past Employment Information</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Organization</label>
+                    <input id="txtExOrganization" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Designation</label>
+                    <input id="txtExDesignation" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Date From</label>
+                    <input id="txtExDateFrom" class="form-control date" />
+                </div>
+                <div class="form-group">
+                    <label>Date To</label>
+                    <input id="txtExDateTo" class="form-control date" />
+                </div>
+                
+            </div>
+            @if (Canedit)
+            {
+                <div class="modal-footer">
+                    <button id="btnSaveExperiance" type="button" class="btn btn-primary"><i class="fa fa-save saveaexe"></i>&nbsp;Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            }
+            
+        </div>
+
+    </div>
+</div>
+<!-- End Organization Modal====================================-->
+
+<!--Reset Password Modal====================================-->
+@using (Html.BeginForm("ResetPassword", "UserManagement", new { UserId = ViewBag.UserId }, FormMethod.Post, new { id = "frmResetPassword", enctype = "multipart/form-data" }))
+{
+        
+    <div class="modal fade" id="ResetPasswordModal" tabindex="-1" role="dialog" aria-labelledby="ResetPasswordModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="ResetPasswordModalLabel"><i class="fa fa-user-plus"></i>&nbsp;Reset User Password</h4>
+                </div>
+                <div class="modal-body">
+                    
+                    <p>User Password Will Be Reset to Default.Do You Want to Continue?</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnResetPassword" type="submit" class="btn btn-danger"><i class="fa fa-save"></i>&nbsp;Yes</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    
+}
+<!-- End Reset Password Modal====================================-->
+
+@section scripts
+{
+    <script src="~/plugins/easy-autocomplete-1.3.5/jquery.easy-autocomplete.min.js"></script>
+}

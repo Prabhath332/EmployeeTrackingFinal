@@ -1,0 +1,548 @@
+﻿@model EmployeeTracking.Models.LeavesViewModel
+@{
+    ViewBag.Title = "Leaves";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
+    var divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
+}
+
+<section class="content-header">
+    <h1>
+        Leave Management
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Leave Types</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row" style="margin-bottom:20px;">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button id="btnNewType" class="btn btn-info"><i class="fa fa-plus"></i>&nbsp;New Leave Type</button>
+                        </div>
+                    </div>
+                    <table id="tblLeaveTypes" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Leave Type</th>
+                                <th style="width: 35%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leavetypetbody">
+                            @{
+                                if (Model.LeaveTypes.Count > 0)
+                                {
+                                    foreach (var item in Model.LeaveTypes)
+                                    {
+                                        <tr>
+                                            <td>@item.LeaveType1</td>
+
+                                            <td>
+                                                <button id="btnEditLeaveType_@item.Id" class="btn btn-primary btn-sm btneditleavetype" type="button"><i class="fa fa-pencil"></i></button>
+                                                @*<button id="btnDeleteLeaveType_@item.Id" class="btn btn-danger btn-sm btndeleteleavetype" type="button"><i class="fa fa-times"></i></button>*@
+                                            </td>
+                                        </tr>
+                                    }
+
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2">No Records Found</td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Leave Allocation By User Level</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row" style="margin-bottom:20px;">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button id="btnAllocation" class="btn btn-info"><i class="fa fa-plus"></i>&nbsp;Leave Allocation</button>
+                        </div>
+                    </div>
+                    <table id="tblUserLevelLeave" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>User Level</th>
+                                @*@foreach (var item in Model.LeaveTypes)
+                                    {
+                                        <th>@item.LeaveType1</th>
+                                    }*@
+                                <th>Anual</th>
+                                <th>Casual</th>
+                                <th style="width: 10%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="UserLevelleavetbody">
+                            @{
+                                if (Model.LeaveTypes.Count > 0)
+                                {
+                                    foreach (var role in Model.UserRoles)
+                                    {
+                                        <tr>
+                                            <td>@role.Name</td>
+                                            @foreach (var item in Model.UserLevelLeavs.Where(x => x.UserLevelId == role.Id))
+                                            {
+                                                if (item.LeaveCount == 0)
+                                                {
+                                                    <td>N/A</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@item.LeaveCount</td>
+                                                }
+
+                                            }
+                                            <td>
+                                                <button id="btnEditLeaveCount_@role.Id" class="btn btn-primary btn-sm btneditleavecount" type="button"><i class="fa fa-pencil"></i></button>
+                                                @*<button id="btnDeleteLeaveType_@item.Id" class="btn btn-danger btn-sm btndeleteleavetype" type="button"><i class="fa fa-times"></i></button>*@
+                                            </td>
+                                        </tr>
+
+                                    }
+
+
+
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2">No Records Found</td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Update Holidays</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @using (Html.BeginForm("UploadHolidays", "UserManagement", FormMethod.Post, new { id = "frmUpdateHolidays", enctype = "multipart/form-data" }))
+                            {
+                                <div class="form-group">
+                                    <label>Select Excecl File</label>
+                                    <input id="fupHolidaysFile" name="fupHolidaysFile" type="file" class="form-control" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                                </div>
+                                <div class="form-group text-right">
+                                    <button id="btnUploadHoliday" type="submit" class="btn btn-primary"><i class="fa fa-upload"></i>&nbsp;Upload</button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table id="tblHolidayDates" class="table tbl">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.HolidayDates != null)
+                                    {
+                                        foreach (var item in Model.HolidayDates)
+                                        {
+                                            <tr>
+                                                <td>@item.Date.ToLongDateString()</td>
+                                                <td>@item.Description</td>
+                                                <td><button id="btnDeleteHoliday_@item.Id" class="btn btn-danger btn-sm" type="button" onclick="deleteHoliday(this.id);"><i class="fa fa-pencil"></i></button></td>
+                                            </tr>
+                                        }
+                                    }
+                                    @*@foreach (var item in Model.HolidayDates)
+                                    {
+                                        <tr>
+                                            <td>@item.Date.ToLongDateString()</td>
+                                            <td>@item.Description</td>
+                                            <td><button id="btnDeleteHoliday_@item.Id" class="btn btn-danger btn-sm" type="button" onclick="deleteHoliday(this.id);"><i class="fa fa-pencil"></i></button></td>
+                                        </tr>
+                                    }*@
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">User Leave Allocation</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row" style="margin-bottom:20px;">
+                        <div class="col-md-12" style="text-align:right;">
+
+                            <button id="btnLeaveUpload" class="btn btn-info" type="button"><i class="fa fa-plus"></i>&nbsp;Allocate User Leaves</button>
+                        </div>
+                    </div>
+                    <table id="tblUserLeaves" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Emp No#</th>
+                                <th>Username</th>
+                                @*@foreach (var item in Model.LeaveTypes.Where(x => x.Id == 3000 || x.Id == 3001))
+                                    {
+                                        <th>@item.LeaveType1 (Reamaining/Allocated)</th>
+                                    }*@
+                                <th>Annual (Reamaining/Allocated)</th>
+                                <th>Casual (Reamaining/Allocated)</th>
+                                <th style="width: 35%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userleavetbody">
+                            @{
+                                if (Model.LeaveTypes.Count > 0)
+                                {
+                                    foreach (var user in Model.UserProfile)
+                                    {
+                                        if (Model.UserLeaves != null)
+                                        {
+                                            <tr>
+                                                <td>@user.EmployeeId</td>
+                                                <td>@user.FirstName</td>
+                                                @if (Model.UserLeaves.Count > 0)
+                                                {
+                                                    if (Model.UserLeaves.Where(x => x.UserId == user.Id).FirstOrDefault() != null)
+                                                    {
+                                                        <td>@Model.UserLeaves.Where(x => x.UserId == user.Id && x.LeaveId == 3000).FirstOrDefault().RemainingCount / @Model.UserLeaves.Where(x => x.UserId == user.Id && x.LeaveId == 3000).FirstOrDefault().AllocatedCount</td>
+                                                        <td>@Model.UserLeaves.Where(x => x.UserId == user.Id && x.LeaveId == 3001).FirstOrDefault().RemainingCount / @Model.UserLeaves.Where(x => x.UserId == user.Id && x.LeaveId == 3001).FirstOrDefault().AllocatedCount</td>
+                                                        
+                                                    }
+                                                    else
+                                                    {                                                        
+                                                        <td>0/0</td>
+                                                        <td>0/0</td>
+                                                    }
+
+                                                }
+                                                else
+                                                {
+
+                                                    <td>0/0</td>
+                                                    <td>0/0</td>
+                                                }
+
+                                                <td><button id="btnEditUserLeave_@user.Id" class="btn btn-primary btn-sm btnedituserleave" type="button"><i class="fa fa-pencil"></i></button></td>
+                                            </tr>
+                                        }
+
+
+                                    }
+
+
+                                }
+                                @*else
+                                    {
+                                        <tr>
+                                            <td colspan="2">No Records Found</td>
+                                        </tr>
+                                    }*@
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@using (Html.BeginForm("NewLeaveType", "UserManagement", FormMethod.Post, new { id = "frmLeaveType" }))
+{
+    <!--New Leave Type Modal====================================-->
+    <div class="modal fade" id="NewLeaveTypeModal" tabindex="-1" role="dialog" aria-labelledby="NewLeaveTypeModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="NewLeaveTypeModalLabel"><i class="fa fa-hourglass"></i>&nbsp;Leave Type</h4>
+                </div>
+                <input type="hidden" name="hfLeaveId" id="hfLeaveId" value="0" />
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <input id="txtType" name="txtType" type="text" class="form-control" />
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSaveType" type="button" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End New Leave Type Modal====================================-->
+
+}
+
+@using (Html.BeginForm("DeleteHolidays", "UserManagement", FormMethod.Post, new { id = "frmDeleteHoliday" }))
+{
+    <!--Delete Holiday  Modal====================================-->
+    <div class="modal fade" id="DeleteHolidayModal" tabindex="-1" role="dialog" aria-labelledby="DeleteHolidayModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="DeleteHolidayModalLabel"><i class="fa fa-hourglass"></i>&nbsp;Delete Holiday</h4>
+                </div>
+                <input type="hidden" name="hfHolidayId" id="hfHolidayId" value="0" />
+                <div class="modal-body">
+                    <p>Are You Sure, You Want to Remove this Holiday ?</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete();"><i class="fa fa-close"></i>&nbsp;Yes</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End New Leave Type Modal====================================-->
+
+}
+
+@using (Html.BeginForm("LeaveAllocation", "UserManagement", FormMethod.Post, new { id = "frmLeaveAllocation" }))
+{
+    <!--New Leave Type Modal====================================-->
+    <div class="modal fade" id="LeaveAllocationModal" tabindex="-1" role="dialog" aria-labelledby="LeaveAllocationModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="LeaveAllocationModalLabel"><i class="fa fa-hourglass"></i>&nbsp;Leave Allocation</h4>
+                </div>
+                <input type="hidden" name="hfAllocatedRoleId" id="hfAllocatedRoleId" value="0" />
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Select User Level</label>
+                        @{
+                            EmployeeTracking.App_Codes._usermanager um = new EmployeeTracking.App_Codes._usermanager();
+                            var lstRoles = um.UserRolesSelect();
+                        }
+                        <select id="ddlUserRoles" name="ddlUserRoles" class="form-control">
+                            <option value="0">[Apply For All Levels]</option>
+                            @foreach (var item in lstRoles)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <table id="tblLeaveAllocation" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Leave Type</th>
+                                <th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leavetypetbody">
+                            @{
+                                if (Model.LeaveTypes.Count > 0)
+                                {
+                                    foreach (var item in Model.LeaveTypes)
+                                    {
+                                        <tr>
+                                            <td>@item.LeaveType1</td>
+                                            <td><input id="LeaveType_@item.Id" name="LeaveType_@item.Id" class="form-control leavetypecount" type="number" /></td>
+                                        </tr>
+                                    }
+
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2">No Records Found</td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSaveAllocation" type="button" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End New Leave Type Modal====================================-->
+
+}
+
+@using (Html.BeginForm("AllocateUserLeaves", "UserManagement", FormMethod.Post, new { id = "frmUserLeaveAllocation", enctype = "multipart/form-data" }))
+{
+    <!--New Leave Type Modal====================================-->
+    <div class="modal fade" id="AllocateUserLeavesModal" tabindex="-1" role="dialog" aria-labelledby="AllocateUserLeavesLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="AllocateUserLeavesLabel"><i class="fa fa-hourglass"></i>&nbsp;Allocate User Leaves</h4>
+                </div>
+                @*<input type="hidden" name="hfDelLeaveId" id="hfDelLeaveId" value="0" />*@
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Select Year</label>
+                        <select id="ddlYear" name="ddlYear" class="form-control">
+                            <option value="@DateTime.Now.AddYears(1)">@DateTime.Now.AddYears(1).Year</option>
+                            <option value="@DateTime.Now.Year" selected>@DateTime.Now.Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Select File To Upload</label>
+                        <input id="fupLeaveFile" name="fupLeaveFile" type="file" class="form-control" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnUpload" type="submit" class="btn btn-primary"><i class="fa fa-upload"></i>&nbsp;Upload</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End New Leave Type Modal====================================-->
+
+}
+
+@using (Html.BeginForm("EditUserLeaves", "UserManagement", FormMethod.Post, new { id = "frmEditUserLeave", enctype = "multipart/form-data" }))
+{
+    <!--New Leave Type Modal====================================-->
+    <div class="modal fade" id="EditUserLeavesModal" tabindex="-1" role="dialog" aria-labelledby="EditUserLeavesModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="EditUserLeavesModalLabel"><i class="fa fa-hourglass"></i>&nbsp;Edit User Leaves</h4>
+                </div>
+
+                <input type="hidden" name="hfLeaveYear" id="hfLeaveYear" value="@DateTime.Now.Year" />
+                <input type="hidden" name="hfEditUser" id="hfEditUser" value="0" />
+
+                <div class="modal-body">
+                    <table id="tblEditUserLeaves" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Leave Type</th>
+                                <th>Allocated Count</th>
+                                <th>Remaining Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="edituserleavetbody">
+                            @{
+                                if (Model.LeaveTypes.Count > 0)
+                                {
+                                    foreach (var item in Model.LeaveTypes)
+                                    {
+                                        <tr>
+                                            <td>@item.LeaveType1</td>
+                                            <td><input id="LeaveType_Allocated_@item.Id" name="LeaveType_Allocated_@item.Id" class="form-control leavetypeallocated" type="text" value="0" /></td>
+                                            <td><input id="LeaveType_Remaining_@item.Id" name="LeaveType_Remaining_@item.Id" class="form-control leavetyperemaining" type="text" value="0" disabled /></td>
+                                        </tr>
+                                    }
+
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2">No Records Found</td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSaveUserLeave" type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End New Leave Type Modal====================================-->
+
+}
+
+@section scripts
+{
+    <script>
+        function deleteHoliday(holidayId) {
+            var id = holidayId.replace("btnDeleteHoliday_", "");
+            $("#hfHolidayId").val(id);
+            $("#DeleteHolidayModal").modal("show");
+        }
+
+        function confirmDelete() {
+            $("#frmDeleteHoliday").submit();
+        }
+    </script>
+    }

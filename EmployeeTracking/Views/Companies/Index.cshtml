@@ -1,0 +1,142 @@
+﻿@model IEnumerable<EmployeeTracking.Models.Company>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        Company Management
+    </h1>
+
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Companies</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row" style="margin-bottom:20px;">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button id="btnNewCompany" class="btn btn-info"><i class="fa fa-plus"></i>&nbsp;New Company</button>
+                        </div>
+                    </div>
+                    <table id="tblCompanies" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Fax</th>
+                                <th style="width: 35%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="devicetbody">
+                            @{
+                                if (Model.Count() > 0)
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.CompanyName</td>
+                                            <td>@item.Phone</td>
+                                            <td>@item.Email</td>
+                                            <td>@item.Fax</td>                                            
+                                            <td><button id="btnEditCompany_@item.Id" class="btn btn-primary btneditcompany btn-sm" type="button"><i class="fa fa-pencil"></i></button>
+                                                <button id="btnDelCompany_@item.Id" class="btn btn-sm btn-danger btndeletecompany" type="button"><i class="fa fa-times"></i></button>
+                                                @*<a href="@Url.Action("DeleteCompany", "Companies", new { id = item.Id})" class="btn btn-sm btn-danger btndeletecompany"><i class="fa fa-times"></i></a>*@
+                                            </td>
+                                        </tr>
+                                    }
+
+                                }
+                            }
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@using (Html.BeginForm("NewCompany", "Companies", FormMethod.Post, new { id = "frmCompany" }))
+{
+        <!--New Company Modal====================================-->
+    <div class="modal fade" id="CompaniesModal" tabindex="-1" role="dialog" aria-labelledby="CompaniesModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="CompaniesModalLabel"><i class="fa fa-bank"></i>&nbsp;Company Details</h4>
+                </div>
+                <div class="modal-body">
+                    <input id="hfCompanyId" name="hfCompanyId" type="hidden" value="0" />
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input id="txtCompanyName" name="txtCompanyName" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input id="txtCompanyPhone" name="txtCompanyPhone" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input id="txtCompanyEmail" name="txtCompanyEmail" type="email" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Fax</label>
+                        <input id="txtCompanyFax" name="txtCompanyFax" type="text" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSaveCompany" name="btnSaveCompany" type="button" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- End Company Level Modal====================================-->
+
+}
+
+@using (Html.BeginForm("DeleteCompany", "Companies", FormMethod.Post))
+{
+        <!--New User Modal====================================-->
+    <div class="modal fade" id="CompanyDelModal" tabindex="-1" role="dialog" aria-labelledby="CompanyDelModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="CompanyDelModalLabel"><i class="fa fa-bank"></i>&nbsp;Delete Company</h4>
+                </div>
+                <input type="hidden" name="hfDelCompany" id="hfDelCompany" value="0" />
+                <div class="modal-body">
+                    This Will Remove the Selected Company and any related Divisions Completely from the System.
+                    Are You Sure?
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDelUser" type="submit" class="btn btn-danger"><i class="fa fa-times"></i>&nbsp;Delete</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End New User Modal====================================-->
+
+}

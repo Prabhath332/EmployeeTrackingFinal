@@ -1,0 +1,140 @@
+﻿
+@{
+    ViewBag.Title = "Leave Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
+    var divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
+
+
+    EmployeeTracking.App_Codes._reports rpt = new EmployeeTracking.App_Codes._reports();
+    var siteLst = rpt.GetAllSiteLocations();
+}
+<link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
+<section class="content-header">
+    <h1>
+        Leave Reports
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tableavesummery" data-toggle="tab">Leave Summery</a></li>
+                    <li><a href="#tableavedetails" data-toggle="tab">Leave Details</a></li>
+                    @*<li><a href="#tabapproved" data-toggle="tab">Approved Leaves</a></li>*@
+                </ul>
+                <div class="tab-content">
+                    <div id="tableavesummery" class="tab-pane active">
+                        @using (Html.BeginForm("LeaveSummery", "Reports", FormMethod.Post, new { id = "frmLeaveReport" }))
+                        {
+                            @*<div id="tableavesummery" class="tab-pane active">*@
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Year</label>
+                                    <select id="ddlYear" name="ddlYear" class="form-control">
+                                        <option value="@DateTime.Now.Year" selected>@DateTime.Now.Year</option>
+                                        <option value="@DateTime.Now.AddYears(-1).Year" selected>@DateTime.Now.AddYears(-1).Year</option>
+                                        <option value="@DateTime.Now.AddYears(-2).Year" selected>@DateTime.Now.AddYears(-2).Year</option>
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Division</label>
+                                    <select id="ddlDivision" name="ddlDivision" class="form-control">
+                                        <option value="0" selected>[All Divisions]</option>
+                                        @foreach (var item in divLst)
+                                        {
+                                            <option value="@item.Id" selected>@item.ProjectName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Location</label>
+                                    <select id="Location" name="Location" class="form-control">
+                                        <option value="0" selected>[All Locations]</option>
+                                        @foreach (var item in siteLst)
+                                        {
+                                            <option value="@item.Id">@item.Location</option>
+                                        }
+                                    </select>
+                                   @* @Html.HiddenFor(m => m.LocationName)*@
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="text-align:right;">
+                                <button id="btnDownloadReport" type="submit" class="btn btn-primary"><i class="fa fa-download"></i>&nbsp;Download</button>
+                            </div>
+                            @*</div>*@
+                        }
+                    </div>
+                    
+
+                    <div id="tableavedetails" class="tab-pane">
+                        @using (Html.BeginForm("LeaveDetails", "Reports", FormMethod.Post, new { id = "frmLeaveReportDetails" }))
+                        {
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>From</label>
+                                    <input id="txtLeaveFrom" name="txtLeaveFrom" class="form-control date leavedate" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>To</label>
+                                    <input id="txtLeaveTo" name="txtLeaveTo" class="form-control date leavedate" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Division</label>
+                                    <select id="ddlDivisionDetails" name="ddlDivisionDetails" class="form-control">
+                                        <option value="0" selected>[All Divisions]</option>
+                                        @foreach (var item in divLst)
+                                        {
+                                            <option value="@item.Id" selected>@item.ProjectName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Location</label>
+                                    <select id="Location" name="Location" class="form-control">
+                                        <option value="0" selected>[All Locations]</option>
+                                        @foreach (var item in siteLst)
+                                        {
+                                            <option value="@item.Id">@item.Location</option>
+                                        }
+                                    </select>
+                                    @*@Html.HiddenFor(m => m.LocationName)*@
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3" style="text-align:right; margin-top:20px;">
+                                <button id="btnDownloadReportDetails" type="submit" class="btn btn-primary"><i class="fa fa-download"></i>&nbsp;Download</button>
+                            </div>
+                        </div>
+                               
+                           
+                        }
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

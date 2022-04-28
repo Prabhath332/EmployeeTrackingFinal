@@ -1,0 +1,178 @@
+﻿@model IEnumerable<EmployeeTracking.Models.Project>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    EmployeeTracking.App_Codes._companies com = new EmployeeTracking.App_Codes._companies();
+    ACRYPTO.ACRYPTO crypto = new ACRYPTO.ACRYPTO();
+}
+<link href="~/plugins/easy-autocomplete-1.3.5/easy-autocomplete.min.css" rel="stylesheet" />
+<link href="~/plugins/easy-autocomplete-1.3.5/easy-autocomplete.themes.min.css" rel="stylesheet" />
+<section class="content-header">
+    <h1>
+        Division Management
+    </h1>
+
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Divisions</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row" style="margin-bottom:20px;">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button id="btnNewDivision" class="btn btn-info"><i class="fa fa-plus"></i>&nbsp;New Division</button>
+                        </div>
+                    </div>
+                    <table id="tblDivisions" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Company</th>
+                                <th>Head of Division</th> 
+                                <th>Description</th>                                                                                              
+                                <th style="width: 35%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="devisiontbody">
+                            @{
+                                if (Model.Count() > 0)
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.ProjectName</td>
+                                            @if (item.CompanyId == null)
+                                            {
+                                                <td>No Company Assigned</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@com.GetCompany(Convert.ToInt32(item.CompanyId)).CompanyName</td>
+                                            }
+                                            <td>@item.ProjectManager</td>
+                                            <td>@item.Description</td>                                            
+                                                                                        
+                                            <td><button id="btnEditDivision_@item.Id" class="btn btn-primary btn-sm btneditdivision" type="button"><i class="fa fa-pencil"></i></button>&nbsp;<a href="@Url.Action("Teams", "Divisions", new { id = crypto.Encrypt(item.Id.ToString())})" class="btn bg-purple btn-sm"><i class="fa fa-users"></i></a>
+                                            <button id="btnDeleteDivision_@item.Id" class="btn btn-danger btn-sm btndeletedivision" type="button"><i class="fa fa-times"></i></button></td>
+                                        </tr>
+                                    }
+
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@using (Html.BeginForm("NewDivision", "Divisions", FormMethod.Post, new { id = "frmDivision" }))
+{
+        <!--New Division Modal====================================-->
+    <div class="modal fade" id="DivisionsModal" tabindex="-1" role="dialog" aria-labelledby="DivisionsModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="DivisionsModalLabel"><i class="fa fa-building"></i>&nbsp;Division Details</h4>
+                </div>
+                <div class="modal-body">
+                    <input id="hfDivisionId" name="hfDivisionId" type="hidden" value="0" />
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input id="txtDivisionName" name="txtDivisionName" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Project Manager</label>
+                        <input id="txtDivisionManager" name="txtDivisionManager" type="text" class="form-control" style="width:100%;" />
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input id="txtDivisionDescription" name="txtDivisionDescription" type="text" class="form-control" />
+                    </div>
+                    
+                    @if (User.IsInRole("SuperAdmin"))
+                    {
+                        <div class="form-group">
+                            <label>Company</label>
+                            @{
+                                var companies = com.GetCompanies();
+                            }
+                            <select id="ddlCompanies" name="ddlCompanies" class="form-control">
+                                @foreach (var item in companies)
+                                {
+                                    <option value="@item.Id">@item.CompanyName</option>
+                                }
+                            </select>
+                        </div>
+                                }
+
+                    @*<div class="form-group">
+                        <label>Date</label>
+                        <input id="txtCompanyEmail" name="txtCompanyEmail" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Fax</label>
+                        <input id="txtCompanyFax" name="txtCompanyFax" type="text" class="form-control" />
+                    </div>*@
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSaveDivision" name="btnSaveDivision" type="button" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- End Division Modal====================================-->
+
+}
+
+@using (Html.BeginForm("DeleteDivision", "Divisions", FormMethod.Post))
+{
+        <!--New User Modal====================================-->
+    <div class="modal fade" id="DivisionDelModal" tabindex="-1" role="dialog" aria-labelledby="DivisionDelModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="DivisionDelModalLabel"><i class="fa fa-user-plus"></i>&nbsp;Delete Division</h4>
+                </div>
+                <input type="hidden" name="hfDelDivision" id="hfDelDivision" value="0" />
+                <div class="modal-body">
+                    This Will Remove the Selected Division from the System.
+                    Are You Sure?
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDelDivision" type="submit" class="btn btn-danger"><i class="fa fa-times"></i>&nbsp;Delete</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End New User Modal====================================-->
+
+}
+
+@section scripts
+{
+<script src="~/plugins/easy-autocomplete-1.3.5/jquery.easy-autocomplete.min.js"></script>
+}

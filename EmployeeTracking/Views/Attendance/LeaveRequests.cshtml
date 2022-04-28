@@ -1,0 +1,373 @@
+﻿@model EmployeeTracking.Models.MyLeavesViewModel
+@{
+    ViewBag.Title = "Leave Requests";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var cult = System.Globalization.CultureInfo.CurrentCulture;
+
+
+}
+<link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
+<link href="~/plugins/easy-autocomplete-1.3.5/easy-autocomplete.min.css" rel="stylesheet" />
+<link href="~/plugins/easy-autocomplete-1.3.5/easy-autocomplete.themes.min.css" rel="stylesheet" />
+
+<section class="content-header">
+    <h1>
+        Leave Requests
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-7">
+@using (Html.BeginForm("SaveLeave", "Attendance", FormMethod.Post, new { id = "frmSaveLeave", enctype = "multipart/form-data" }))
+{
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">Request Leave</h3>
+        </div>
+        <div class="box-body">
+            <input id="hfLeaveUserId" name="hfLeaveUserId" type="hidden" value="@Session["UserId"].ToString()" />
+           
+            @Html.HiddenFor(model => model.LeaveHistory.SupervisorId, new { @id = "hfLeaveSupervisorId" })
+            @Html.HiddenFor(model => model.LeaveHistory.LeaveDays, new { @id = "hfLeaveDays" })
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Unit</label>
+                        <select id="ddlLeaveUnit" name="ddlLeaveUnit" class="form-control">
+                            <option value="FULL">Full Day</option>
+                            <option value="HALFMOR">Morning Half</option>
+                            <option value="HALFEVE">Evening Half</option>
+                            <option value="SHORT">Short Leave</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div id="divLeaveDetails" class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Leave Type</label>
+                        <select id="ddlLeaveType" name="ddlLeaveType" class="form-control">
+                            @foreach (var item in Model.LeaveTypes)
+                            {
+                                <option value="@item.Id">@item.LeaveType1</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>From</label>
+                        @Html.EditorFor(model => model.LeaveHistory.FromDate, new { htmlAttributes = new { @class = "form-control date leavedate", @id = "txtLeaveFrom" } })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>To</label>
+                        @Html.EditorFor(model => model.LeaveHistory.ToDate, new { htmlAttributes = new { @class = "form-control date leavedate", @id = "txtLeaveTo" } })
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Number of Days</label>
+                        @Html.EditorFor(model => model.LeaveHistory.LeaveDays, new { htmlAttributes = new { @class = "form-control", @id = "txtLeaveDays", @type = "number", @disabled = true } })
+
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Supervisor</label>
+                        <input id="txtSupervisor" name="txtSupervisor" type="text" class="form-control" style="width:100%;" />
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Covered By</label>
+                        @Html.EditorFor(model => model.LeaveHistory.CoveredBy, new { htmlAttributes = new { @class = "form-control", @id = "txtCoveredBy" } })
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Reason For Leave</label>
+                        @Html.TextAreaFor(model => model.LeaveHistory.Reason, new { @class = "form-control", @id = "txtReason", @rows = 6 })
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-group" style="text-align:right;">
+                        <button id="btnRequestLeave" type="button" class="btn btn-primary"><i class="fa fa-level-up"></i>&nbsp;Request Leave</button>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+}
+            
+        </div>
+        <div class="col-md-5">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">My Leaves</h3>
+                </div>
+                <div class="box-body">
+                    <table id="tblMyLeaves" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Leave Type</th>
+                                <th>Allocated</th>
+                                <th>Remaining</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.UserLeaves.Count() > 0)
+                            {
+                                foreach (var item in Model.UserLeaves)
+                                {
+                                    <tr>
+                                        <td>@item.LeaveType
+                                        <input type="hidden" id="hfLeaveTypeName_@item.LeaveId" data-remaning="@item.RemainingCount" value="@item.RemainingCount" class="hfLeaveType" />
+                                        </td>
+                                        <td>@item.AllocatedCount</td>
+                                        <td>@item.RemainingCount
+                                            @*<input type="hidden" id="hfLeaveRemaning_@item.Id" />*@
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="3">No Data Available</td></tr>
+                            }                     
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    @{ 
+                        var cancelCount = Model.RejectedLeaves.Count();
+                    }
+                    <li class="active"><a href="#tabpending" data-toggle="tab">Pending Leaves&nbsp;&nbsp;<span class="badge bg-light-blue">@Model.MyLeaveHistory.Where(x => x.IsApproved == "pending").Count()</span></a></li>
+                    <li><a href="#tabcanceled" data-toggle="tab">Canceled/Rejected Leaves&nbsp;&nbsp;<span class="badge bg-light-blue">@cancelCount</span></a></li>
+                    <li><a href="#tabapproved" data-toggle="tab">Approved Leaves&nbsp;&nbsp;<span class="badge bg-light-blue">@Model.MyLeaveHistory.Where(x => x.IsApproved == "true").Count()</span></a></li>                    
+                </ul>
+                <div class="tab-content">
+                    <div id="tabpending" class="tab-pane active">
+                        <table id="tblPendingLeaves" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Leave</th>
+                                    <th>Leave Type</th>
+                                    <th>Requestet On</th>                                    
+                                    <th>Period</th>
+                                    <th>Days</th>
+                                    <th>Reason</th>
+                                    <th>Supervisor</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.MyLeaveHistory.Count > 0)
+                                {
+                                    foreach (var item in Model.MyLeaveHistory)
+                                    {
+                                        if (item.IsApproved == "pending")
+                                        {
+                                            <tr>
+                                                <td>@item.LeaveUnit</td>
+                                                <td>@item.LeaveTypeStr</td>
+                                                <td>@item.RequestDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.RequestDate.Month)</td>
+                                                <td>From @item.FromDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.FromDate.Month) To @item.ToDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.ToDate.Month)</td>
+                                                <td>@item.LeaveDays</td>
+                                                <td>@item.Reason</td>
+                                                <td>@item.ApprovedBy</td>
+                                                <td><button id="btnLeaveCancel_@item.Id" class="btn btn-danger btn-sm usercancel" title="Cancel"><i class="fa fa-times"></i></button></td>
+                                            </tr>
+                                        }
+
+                                    }
+
+                                    if (Model.MyLeaveHistory.Where(x => x.IsApproved == "pending").Count() == 0)
+                                    {
+                                        <tr><td colspan="7">No Data Available</td></tr>
+                                    }
+
+                                }
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tabcanceled" class="tab-pane">
+                        <table id="tblCanceledLeaves" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Leave</th>
+                                    <th>Leave Type</th>
+                                    <th>Requestet On</th>                                    
+                                    <th>Period</th>
+                                    <th>Days</th>
+                                    <th>Rejected By</th>
+                                    <th>Reason</th>                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.RejectedLeaves.Count > 0)
+                                {
+                                    foreach (var item in Model.RejectedLeaves)
+                                    {
+                                        <tr>
+                                            <td>@item.Unit</td>
+                                            <td>@item.LeaveType</td>
+                                            <td>@item.RequestedOn</td>                                            
+                                            <td>@item.Period</td>
+                                            <td>@item.Days</td>
+                                            <td>@item.RejectedBy</td>
+                                            <td>@item.Remarks</td>
+                                        </tr>
+
+                                        @*if (item.IsApproved == "canceled")
+                                        {
+                                            <tr>
+                                                <td>@item.LeaveTypeStr</td>
+                                                <td>@item.RequestDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.RequestDate.Month)</td>
+                                                <td>@item.LeaveUnit</td>
+                                                <td>From @item.FromDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.FromDate.Month) To @item.ToDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.ToDate.Month)</td>
+                                                <td>@item.LeaveDays</td>
+                                                <td>@item.Remarks</td>                                                
+                                            </tr>
+                                        }
+                                        else if (item.IsApproved == "false")
+                                        {
+                                            <tr>
+                                                <td>@item.LeaveTypeStr</td>
+                                                <td>@item.RequestDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.RequestDate.Month)</td>
+                                                <td>@item.LeaveUnit</td>
+                                                <td>From @item.FromDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.FromDate.Month) To @item.ToDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.ToDate.Month)</td>
+                                                <td>@item.LeaveDays</td>
+                                                <td>@item.Remarks</td>
+                                            </tr>
+                                        }*@
+
+                                    }
+
+                                    if (cancelCount == 0)
+                                    {
+                                        <tr><td colspan="6">No Data Available</td></tr>
+                                    }
+                                }
+                                
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tabapproved" class="tab-pane">
+                        <table id="tblCanceledLeaves" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Reference #</th>
+                                    <th>Unit</th>
+                                    <th>Leave Type</th>
+                                    <th>Requestet On</th>                                    
+                                    <th>Period</th>
+                                    <th>Days</th>
+                                    <th>Approved By</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.MyLeaveHistory.Count > 0)
+                                {
+                                    foreach (var item in Model.MyLeaveHistory)
+                                    {
+                                        if (item.IsApproved == "true")
+                                        {
+                                            <tr>
+                                                <td>@item.Id</td>
+                                                <td>@item.LeaveUnit</td>
+                                                <td>@item.LeaveTypeStr</td>
+                                                <td>@item.RequestDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.RequestDate.Month)</td>
+                                                <td>From @item.FromDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.FromDate.Month) To @item.ToDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.ToDate.Month)</td>
+                                                <td>@item.LeaveDays</td>
+                                                <td>@item.ApprovedBy</td>
+                                                <td>@item.Reason</td>
+                                            </tr>
+                                        }
+
+                                    }
+
+                                    if (Model.MyLeaveHistory.Where(x => x.IsApproved == "true").Count() == 0)
+                                    {
+                                        <tr><td colspan="7">No Data Available</td></tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="3">No Data Available</td></tr>
+                                }
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @*<div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Pending Leaves</h3>
+                </div>
+                <div class="box-body">
+                   
+                </div>
+            </div>*@
+        </div>
+    </div>
+</section>
+
+@using (Html.BeginForm("UserCancelLeave", "Attendance", FormMethod.Post, new { id = "frmUserCancelLeave", enctype = "multipart/form-data" }))
+{
+        <!--New User Modal====================================-->
+    <div class="modal fade" id="UserCancelLeaveModal" tabindex="-1" role="dialog" aria-labelledby="UserCancelLeaveModallLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="UserCancelLeaveModalLabel"><i class="fa fa-times"></i>&nbsp;Cancel Leave Request</h4>
+                </div>
+                <div class="modal-body">
+                    <input id="hfCancelLeaveId" type="hidden" name="hfCancelLeaveId" value="0" />                    
+                    <p>Do you Really Want to Cancel Your Leave Request ?</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnCancelLeave" type="submit" class="btn btn-primary"><i class="fa fa-thumbs-up"></i>&nbsp;Yes</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End New User Modal====================================-->
+
+}
+
+@section scripts
+{
+    <script src="~/plugins/easy-autocomplete-1.3.5/jquery.easy-autocomplete.min.js"></script>
+}

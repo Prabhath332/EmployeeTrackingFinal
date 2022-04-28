@@ -1,0 +1,250 @@
+﻿@model EmployeeTracking.Models.MonthlyLeaveSummeryViewModel
+
+@{
+    var cult = System.Globalization.CultureInfo.CurrentCulture;
+
+    ViewBag.Title = "MonthlyLeaveSummery";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <form method="post" name="frmMonthlyAttendance" action="MonthlyLeaveSummery">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Division Name</label>
+                            <select id="Division" name="Division" class="form-control">
+                                <option value="0" selected>[All Divisions]</option>
+                                @foreach (var item in Model.Divisions)
+                                {
+                                    <option value="@item.Id">@item.ProjectName</option>
+                                }
+                            </select>
+                            @Html.HiddenFor(m => m.DivisionName)
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Month</label>
+                            <select id="Month" name="Month" class="form-control">                                
+                                @foreach (var item in Model.MonthList)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                            @*@Html.HiddenFor(m => m.)*@
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Year</label>
+                            <select id="Year" name="Year" class="form-control">
+                                @for (int i = 0; i <= 3; i++)
+                                {
+                                    var thisYear = DateTime.Now.Year;
+
+                                    if (i == 0)
+                                    {
+                                        <option value="@thisYear" selected>@thisYear</option>
+                                    }
+                                    else
+                                    {
+                                        thisYear -= i;
+                                        <option value="@thisYear">@thisYear</option>
+                                    }
+
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+            <div class="panel-footer">
+                <button id="btnFilter" name="view" class="btn btn-primary" type="submit">View Report</button>
+                <button id="btnFilter" name="default" class="btn btn-primary" type="submit">Download Report</button>
+                <button id="btnFilterSystem" name="system" class="btn btn-primary" type="submit">System Formatted Report</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-body">
+                <div class="col-md-12">
+                    <div class="form-group reportbody">
+                        <div id="printPriview" class="overfolow-y-auto">
+                            <table class="reportTable table lv-dt-tbl" id="report">
+                                <thead>
+                                    <tr class="nobod">
+                                        <th class="color-white"> &nbsp;</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+
+                                    <tr class="nobod">
+                                        <th rowspan="4" colspan="2">
+                                            <img src="~/Content/Images/sierrs.png" height="100" />
+                                        </th>
+                                        <th colspan="4" class="text-right">Division Name : </th>
+                                        <th colspan="15"> @((ViewBag.Division != null) ? ViewBag.Division : "")</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    @*<tr class="nobod">
+                                            <th colspan="2" class="text-right">Location : </th>
+                                            <th colspan="5"> @((ViewBag.Location != null) ? ViewBag.Location : "")</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+
+                                        </tr>*@
+                                    <tr class="nobod">
+
+                                        <th colspan="2" class="text-right">Year : </th>
+                                        <th colspan="5"> @((ViewBag.Year != null) ? ViewBag.Year : "")</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+
+                                    </tr>
+                                    <tr></tr>
+                                    <tr></tr>
+
+                                    <tr>
+                                        <th rowspan="2">EPF No</th>
+                                        <th rowspan="2">Employee Name</th>
+
+                                        @for (int i = 1; i <= Model.DaysInMonth; i++)
+                                        {
+                                            <th>@i</th>
+                                        }
+
+                                        <th colspan="4">Total</th>
+                                    </tr>
+
+                                    <tr class="heattext">
+
+                                        @for (int i = 1; i <= Model.DaysInMonth; i++)
+                                        {
+                                            DateTime date = new DateTime(Model.Year, Model.Month, i);
+
+                                            if (date.DayOfWeek == DayOfWeek.Saturday)
+                                            {
+                                                <th style="background-color:#ffd168">SAT</th>
+                                            }
+                                            else if (date.DayOfWeek == DayOfWeek.Sunday)
+                                            {
+                                                <th style="background-color:#ffb100">SUN</th>
+                                            }
+                                            else
+                                            {
+                                                <th></th>
+                                            }
+
+                                        }
+
+                                        <th>CA</th>
+                                        <th>AN</th>
+                                        <th>NL</th>
+                                        <th>SL</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @{
+                                        if (Model.ReportData != null)
+                                        {
+                                            foreach (System.Data.DataRow drow in Model.ReportData.Rows)
+                                            {
+                                                <tr>
+                                                    <td>@drow["Employee No"]</td>
+                                                    <td>@drow["Employee Name"]</td>
+                                                    @for (int i = 1; i <= Model.DaysInMonth; i++)
+                                                    {
+                                                        DateTime date = new DateTime(Model.Year, Model.Month, i);
+
+                                                        if (date.DayOfWeek == DayOfWeek.Saturday)
+                                                        {
+                                                            <th style="background-color:#ffd168">@drow["Date_" + i]</th>
+                                                        }
+                                                        else if (date.DayOfWeek == DayOfWeek.Sunday)
+                                                        {
+                                                            <th style="background-color:#ffb100">@drow["Date_" + i]</th>
+                                                        }
+                                                        else
+                                                        {
+                                                            <th>@drow["Date_" + i]</th>
+                                                        }
+
+                                                    }
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            }
+                                        }
+
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="13">
+                                            <table class="foottable">
+                                                <tbody>
+                                                    <tr class="color-white">
+                                                        <td> &nbsp; </td>
+                                                        <td> &nbsp; </td>
+                                                        <td> &nbsp; </td>
+                                                    </tr>
+
+                                                    @*<tr class="watermark">
+                                                            <td class="text-left">This is a System Generated Document. No signature is Required</td>
+                                                            <td class="text-center">Sierra Construction Limited<br /> Printed on @DateTime.Now.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(DateTime.Now.Month)-@DateTime.Now.Year</td>
+                                                            <td class="text-right">SEMS Powered by SIOT</td>
+                                                        </tr>*@
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</section>
+

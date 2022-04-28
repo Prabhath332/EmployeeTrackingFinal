@@ -1,0 +1,48 @@
+﻿body {
+    
+}
+
+.editprofileimage
+{
+    cursor:pointer;
+}
+
+.editprofileimage:hover
+{
+
+}
+
+.ctrl-hide{
+    display:none !important;
+}
+
+.pad-right{
+    padding-right:40px;
+}
+
+.pad-right-15{
+     padding-right:15px;
+}
+
+.rptrebbon{
+        background-color: #607D8B;
+    padding: 5px;
+    text-align: right;
+    width: 100%;
+}
+
+.overfolow-y-auto{
+    overflow-y:auto !important;
+}
+
+.nobod{
+    border:0 !important;
+}
+
+.nobod> th{
+    border:0 !important;
+}
+
+.lv-dt-tbl> tbody> tr> td{
+    border: 1px solid #f4f4f4 !important;
+}

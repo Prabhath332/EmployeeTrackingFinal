@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewBag.Title = "UserLevels";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    EmployeeTracking.App_Codes._usermanager um = new EmployeeTracking.App_Codes._usermanager();
+}
+
+<section class="content-header">
+    <h1>
+        User Level Management
+    </h1>
+
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">User Levels</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row" style="margin-bottom:20px;">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button id="btnNewLevel" class="btn btn-info"><i class="fa fa-plus"></i>&nbsp;New User Level</button>
+                        </div>
+                    </div>
+                    <table id="tblLevels" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>User Level</th>
+                                <th>Sort Order</th>
+                                <th style="width: 35%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="devicetbody">
+                            @{
+                                var roles = um.GetRoles();
+                                var roleLevels = um.GetRoleLevels();
+
+                                if (roles.Count > 0)
+                                {
+                                    foreach (var item in roles)
+                                    {
+                                        <tr>
+                                            <td>@item.Name</td>
+                                            <td>@roleLevels.Where(x => x.RoleId == item.Id).FirstOrDefault().SortOrder</td>
+                                            <td><a id="btnEditRole_@item.Id" class="btn btn-primary btneditrole" href="@Url.Action("UserModules", "UserManagement", new { id = item.Id })"><i class="fa fa-pencil"></i></a></td>
+                                            @*<td><button id="btnEditRole_@item.Id" class="btn btn-primary btneditrole"><i class="fa fa-pencil"></i></button></td>*@
+                                        </tr>
+                                    }
+
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+   
+   
+</section>
+@using (Html.BeginForm("NewUserLevel", "UserManagement", FormMethod.Post, new { id = "frmRole" }))
+{
+        <!--New User Level Modal====================================-->
+    <div class="modal fade" id="UserLevelModal" tabindex="-1" role="dialog" aria-labelledby="UserLevelLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="UserLevelLabel"><i class="fa fa-power-off"></i>&nbsp;User Levels</h4>
+                </div>
+                <div id="modalBodyUserLevel" class="modal-body">
+                    <input id="hfRoleId" name="hfRoleId" type="hidden" value="0" />
+                    <div class="form-group">
+                        <label>User Level</label>
+                        <input id="txtUserLevel" name="txtUserLevel" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Sort Order</label>
+                        @{
+                            var sortIndex = um.GetNewRoleIndex();
+                        }
+                        <input id="txtSortOrder" name="txtSortOrder" type="text" class="form-control" value="@sortIndex" />
+                        <div class="callout callout-warning" style="margin-top:10px;">
+                            <p>Changing Order Manually will Update Othe User Level Orders as Well</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkEdit" name="chkEdit" type="checkbox" />
+                                Users Can Edit or Create Records
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="chkViewAll" name="chkViewAll" type="checkbox" />
+                                Users Can View All Records
+                            </label>
+
+                        </div>
+                    </div>
+                    <div id="divRoleLevels" style="margin-top:10px; height:400px; overflow:scroll;">
+                        <h4>Assign Module to Level</h4>
+                        <table id="tblModules" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Module</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyModules"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSaveUserLevel" name="btnSaveUserLevel" type="button" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- End New User Level Modal====================================-->
+
+                                    }

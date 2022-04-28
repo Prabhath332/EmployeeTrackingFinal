@@ -1,0 +1,95 @@
+﻿@model EmployeeTracking.Models.UserAccessViewModel
+
+@{
+    ViewBag.Title = "UserModules";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    EmployeeTracking.App_Codes._usermanager um = new EmployeeTracking.App_Codes._usermanager();
+}
+
+<section class="content-header">
+    <h1>
+        User Access Control
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        @using (Html.BeginForm("NewUserLevel", "UserManagement", FormMethod.Post, new { id = "frmRole" }))
+        {
+            <div class="col-md-4">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">User Level</h3>
+                    </div>
+                    <div class="box-body">
+                        <input id="hfRoleId" name="hfRoleId" type="hidden" value="@Model.UserRole.Id" />
+                        <div class="form-group">
+                            <label>User Level</label>
+                            <input id="txtUserLevel" name="txtUserLevel" type="text" class="form-control" value="@Model.UserRole.RoleName" />
+                        </div>
+                        <div class="form-group">
+                            <label>Sort Order</label>
+                            <input id="txtSortOrder" name="txtSortOrder" type="text" class="form-control" value="@Model.UserRole.SortOrder" disabled />
+                            <div class="callout callout-warning" style="margin-top:10px;">
+                                <p>Changing Order Manually will Update Othe User Level Orders as Well</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkEdit" name="chkEdit" type="checkbox" />
+                                    Users Can Edit or Create Records
+                                </label>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <input id="chkViewAll" name="chkViewAll" type="checkbox" />
+                                    Users Can View All Records
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="text-align:right;">
+                            <button id="btnSaveUserLevel" name="btnSaveUserLevel" type="button" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+
+        
+        <div class="col-md-8">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Modules</h3>
+                </div>
+                <div class="box-body">
+                    <table id="tblModules" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyModules">
+                            @foreach (var item in Model.UserModules)
+                            {
+                                if (item.IsChecked)
+                                {
+                                    <tr><td><button id="btndellevels_@item.Id" type="button" onclick="changeLevelModal(@item.Id, 0);" class="btn btn-sm btn-icon btn-danger" style="margin-right: 5px;"><i id="ispin_@item.Id" class="fa fa-remove changestate"></i></button></td><td>@item.Module</td></tr>
+                                }
+                                else
+                                {
+                                    <tr><td><button id="btnassignedlevels_@item.Id" type="button" onclick="changeLevelModal(@item.Id, 1);" class="btn btn-sm btn-icon btn-primary" style="margin-right: 5px;"><i id="ispin_@item.Id" class="fa fa-plus changestate"></i></button></td><td>@item.Module</td></tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

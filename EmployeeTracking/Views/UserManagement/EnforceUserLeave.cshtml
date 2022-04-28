@@ -1,0 +1,139 @@
+﻿@model EmployeeTracking.Models.LeaveHistory
+@{
+    ViewBag.Title = "Enforce User Leave";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
+<section class="content-header">
+    <h1>
+        Enforce User Leave
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">User Details</h3>
+                    <div class="box-tools pull-right">
+                        
+                    </div>
+                </div>
+                <div class="box-body">
+                    
+                    @using (Html.BeginForm("EnforceUserLeave", "UserManagement", FormMethod.Post, new { id = "frmEnforceUserLeave" }))
+                    {
+                        <input type="hidden" id="hfUserId" name="hfUserId" value="@Session["UserId"].ToString()" />
+                        @*@Html.HiddenFor(model => model.SupervisorId, new { @id = "hfUserId", @value = @Session["UserId"].ToString() })*@
+                        @Html.HiddenFor(model => model.UserId, new { @id = "hfLeaveUserId" })
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="input-group" style="padding-top: 25px;">
+                                    <input id="txtEmpNo" name="txtEmpNo" type="text" class="form-control" style="width:100%;" placeholder="Employee Number" />
+                                    <div class="input-group-btn">
+                                        <button id="btnSearchEmp" class="btn btn-danger" type="button">Search</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Employee Name</label>
+                                    <input id="txtEmpName" name="txtEmpName" type="text" class="form-control" style="width:100%;" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Designation</label>
+                                    <input id="txtDesignation" name="txtDesignation" type="text" class="form-control" style="width:100%;" disabled />
+                                </div>
+                            </div>                            
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Division/Project</label>
+                                    <input id="txtEmpProject" name="txtEmpProject" type="text" class="form-control" style="width:100%;" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Current PM/Hod</label>
+                                    <input id="txtCurrentSupervisor" name="txtCurrentSupervisor" type="text" class="form-control" disabled style="width:100%;" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Current Location</label>
+                                    <input id="txtCurrentLocation" name="txtCurrentLocation" type="text" class="form-control" style="width:100%;" disabled />
+                                </div>
+                            </div>        
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Unit</label>
+                                    <select id="ddlLeaveUnit" name="ddlLeaveUnit" class="form-control">
+                                        <option value="FULL">Full Day</option>
+                                        <option value="HALFMOR">Morning Half</option>
+                                        <option value="HALFEVE">Evening Half</option>
+                                        <option value="SHORT">Short Leave</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Leave Type</label>
+                                    <select id="ddlLeaveType" name="ddlLeaveType" class="form-control">
+                                        <option value="0">[Select a Leave Type]</option>
+                                        <option value="3000">Annual</option>
+                                        <option value="3001">Casual</option>
+                                    </select>
+                                </div>
+                            </div>                            
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>From</label>
+                                    @Html.EditorFor(model => model.FromDate, new { htmlAttributes = new { @class = "form-control date leavedate", @id = "txtLeaveFrom" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>To</label>
+                                    @Html.EditorFor(model => model.ToDate, new { htmlAttributes = new { @class = "form-control date leavedate", @id = "txtLeaveTo" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Days</label>
+                                    @Html.HiddenFor(model => model.LeaveDays, new { @id = "hfLeaveDays" })
+                                    @Html.EditorFor(model => model.LeaveDays, new { htmlAttributes = new { @class = "form-control", @id = "txtLeaveDays", @type = "number", @disabled = true } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Reason</label>
+                                    @Html.TextAreaFor(model => model.Reason, new { @class = "form-control", @id = "txtReason", @rows = 6 })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" style="text-align:right;">
+                                    <button id="btnEnforceLeave" type="button" class="btn btn-primary"><i class="fa fa-level-up"></i>&nbsp;Enforce Leave</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

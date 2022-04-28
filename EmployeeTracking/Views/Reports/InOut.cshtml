@@ -1,0 +1,460 @@
+﻿@{
+    ViewBag.Title = "InOut";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
+    var divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
+
+    EmployeeTracking.App_Codes._reports rpt = new EmployeeTracking.App_Codes._reports();
+    var siteLst = rpt.GetAllSiteLocations();
+
+    var DivisionCodes = rpt.GetdivisionCodes();
+
+    var cult = System.Globalization.CultureInfo.CurrentCulture;
+}
+@model EmployeeTracking.Models.Reports
+<link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
+
+<link href="~/Content/Printing.css" rel="stylesheet" />
+<section class="content">
+    <div class="panel">
+        <div class="panel-body">
+            <form method="post" name="frmfilterreport">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Division Name</label>
+                            <select id="Division" name="Division" class="form-control">
+                                <option value="0" selected>[All Divisions]</option>
+                                @foreach (var item in divLst)
+                                {
+                                    <option value="@item.Id">@item.ProjectName</option>
+                                }
+                            </select>
+                            @Html.HiddenFor(m => m.DivisionName)
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Location</label>
+                            <select id="Location" name="Location" class="form-control">
+                                <option value="0" selected>[All Locations]</option>
+                                @foreach (var item in siteLst)
+                                {
+                                    <option value="@item.Id">@item.Location</option>
+                                }
+                            </select>
+                            @Html.HiddenFor(m => m.LocationName)
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Division Code</label>
+                            <select id="CboDivisionCode" name="DivisionCode" class="form-control">
+                                <option value="0" selected>[All Division Codes]</option>
+                                @foreach (var item in DivisionCodes)
+                                {
+                                    <option value="@item.DivisionCode">@item.DivisionCode</option>
+                                }
+                            </select>
+                            @Html.HiddenFor(m=>m.DivisionCode)
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="CboStatus" name="Status" class="form-control">
+                                <option value="All" selected>[All Status]</option>
+                                <option value="true">Approved</option>
+                                <option value="pending">Pending</option>
+                                <option value="false">Rejected</option>
+                                <option value="cancel">Cancel</option>
+                            </select>
+                            @Html.HiddenFor(m => m.StatusView)
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>From</label>
+                                    <input type="text" name="from" id="from" class="form-control fromdate" required autocomplete="off" />
+                                    @Html.HiddenFor(m => m.From)
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>To</label>
+                                    <input type="text" name="to" id="to" class="form-control todate" required autocomplete="off" />
+                                    @Html.HiddenFor(m => m.To)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <label class="pad-right-15">@Html.CheckBoxFor(m => m.Date) Date</label>
+                            <label class="pad-right-15">@Html.CheckBoxFor(m => m.InTime)In Time</label>
+                            <label class="pad-right-15">@Html.CheckBoxFor(m => m.InReason)In Reason</label>
+                            <label class="pad-right-15">@Html.CheckBoxFor(m => m.OutTime)Out Time</label>
+                            <label class="pad-right-15">@Html.CheckBoxFor(m => m.OutReason)Out Reason</label>
+                            <label class="pad-right-15">@Html.CheckBoxFor(m => m.inoutdate)Request Date</label>
+                            <label class="pad-right-15">@Html.CheckBoxFor(m => m.SuperVisor)Approved by</label>
+                            <label class="pad-right-15">@Html.CheckBoxFor(m => m.immediateSuperVisor)supervisor</label>
+                            <label class="pad-right-15">@Html.CheckBoxFor(m => m.BStatus)Status</label>                           
+                            <label class="pad-right-15">@Html.CheckBoxFor(m => m.Comment)Remark</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-right">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" name="view" id="view">View</button>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="panel-body">
+            <div class="col-md-12">
+                <form method="post">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="rptrebbon">
+                                <button type="button" class="btn btn-warning btn-sm" name="print" id="print">Print/PDF</button>
+                                <button class="btn btn-success btn-sm" type="submit" name="excel" id="excel">Excel</button>
+                                @*<button class="btn btn-primary" type="button" name="word" id="word">Word</button>*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group reportbody">
+                        @Html.HiddenFor(m => m.HTMLContent)
+                         
+
+                        <div id="printPriview">
+                            <table class="reportTable" id="report">
+                                <thead>
+                                    <tr>
+                                        <th colspan="3">In/Out Correction Report</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="color-white"> &nbsp;</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+
+                                    <tr>
+                                        <th rowspan="5" colspan="2">
+                                            <img src="~/Content/Images/sierrs.png" height="100" />
+                                        </th>
+                                        <th colspan="2">@((Model.DivisionName== null)? "[All Divisions]" : Model.DivisionName)</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th> 
+                                        <th></th>
+                                    </tr>
+                                    <tr>
+                                        
+                                        <th colspan="2">@((Model.LocationName == null? "[All Locations]" : Model.LocationName))</th>  
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        
+                                    </tr>
+                                    <tr>
+                                         
+                                        <th colspan="2">@((Model.DivisionCode == "0" || Model.DivisionCode==null) ? "[All Division Codes]" : Model.DivisionCode)</th>  
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                         
+                                    </tr>
+                                    <tr>
+
+                                        <th colspan="2">@((Model.Status == null ? "[All Status]" : Model.StatusView))</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2">@((Model.From.ToString("MM/dd/yyyy") == "01/01/0001") ? "" : Model.From.ToString("MM/dd/yyyy")) - @((Model.To.ToString("MM/dd/yyyy") == "01/01/0001") ? "" : Model.To.ToString("MM/dd/yyyy"))</th>  
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                   
+
+                                    <tr class="heattext">
+                                        <th>Employee No</th>
+                                        <th>Employee Name</th>
+                                        <th>Designation</th>                                       
+                                        @{
+                                            if (Model.Date)
+                                            {
+                                                <th>Date</th>
+                                            }
+                                        }
+                                        @{
+                                            if (Model.InTime)
+                                            {
+                                                <th>In Time</th>
+                                            }
+                                        }
+                                        @{
+                                            if (Model.InReason)
+                                            {
+                                                <th>In Reason</th>
+                                            }
+                                        }
+                                        @{
+                                            if (Model.OutTime)
+                                            {
+                                                <th>Out Time</th>
+                                            }
+                                        }
+                                        @{
+                                            if (Model.OutReason)
+                                            {
+                                                <th>Out Reason</th>
+                                            }
+                                        }
+                                        @{
+                                            if (Model.inoutdate)
+                                            {
+                                                <th>Request Date</th>
+                                            }
+                                        }
+                                        @{
+                                            if (Model.SuperVisor)
+                                            {
+                                                <th>Approved by</th>
+                                            }
+                                        }
+                                        @{
+                                            if (Model.immediateSuperVisor)
+                                            {
+                                                <th>Immediate supervisor</th>
+                                            }
+                                        }
+                                        @{
+                                            if (Model.BStatus)
+                                            {
+                                                <th>Status</th>
+                                            }
+                                        }                                      
+                                        @{
+                                            if (Model.Comment)
+                                            {
+                                                <th>Remark</th>
+                                            }
+                                        } 
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    @*   ............ *@
+                                    @{
+                                        var lst = Model.InOutResult;
+                                        int datacount = lst.Count;
+                                        int maxcount = 36;
+                                        int currentcount = 0;
+                                        int pagenumber = 1;
+
+
+
+                                        int count = currentcount;
+                                        for (int i = 0; i < (datacount + 1); i++)
+                                        {
+
+                                            if (i == (datacount))
+                                            {
+
+                                                for (int j = 0; j < (maxcount) - count; j++)
+                                                {
+                                                    <tr>
+                                                        @*<td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        @{
+                                                            if (Model.Date)
+                                                            {
+                                                                <td>&nbsp;</td>
+                                                            }
+                                                            if (Model.InTime)
+                                                            {
+                                                                <td>&nbsp;</td>
+                                                            }
+                                                            if (Model.InReason)
+                                                            {
+                                                                <td>&nbsp;</td>
+                                                            }
+                                                            if (Model.OutTime)
+                                                            {
+                                                                <td>&nbsp;</td>
+                                                            }
+                                                            if (Model.OutReason)
+                                                            {
+                                                                <td>&nbsp;</td>
+                                                            }
+                                                            if (Model.SuperVisor)
+                                                            {
+                                                                <td>&nbsp;</td>
+                                                            }
+                                                            if (Model.Status)
+                                                            {
+                                                                <td>&nbsp;</td>
+                                                            }
+                                                        }*@
+                                                    </tr>
+
+                                                                }
+                                                                currentcount = 38;
+                                                            }
+                                                            else
+                                                            {
+                                                                if (datacount > 0)
+                                                                {
+                                                                    int DataIndex = i;
+                                                                    <tr>
+
+                                                                        <td>@lst[DataIndex].EmployeeNumber</td>
+                                                                        <td>@lst[DataIndex].EmployeeName</td>
+                                                                        <td>@lst[DataIndex].Designation</td>
+
+                                                                        @{
+                                                                           
+                                                                            if (Model.Date)
+                                                                            {
+                                                                                <td>@lst[DataIndex].DateStr</td>
+                                                                            }
+                                                                            if (Model.InTime)
+                                                                            {
+                                                                                <td>@lst[DataIndex].InTime</td>
+                                                                            }
+                                                                            if (Model.InReason)
+                                                                            {
+                                                                                <td>@lst[DataIndex].InReason</td>
+                                                                            }
+                                                                            if (Model.OutTime)
+                                                                            {
+                                                                                <td>@lst[DataIndex].OutTime</td>
+                                                                            }
+                                                                            if (Model.OutReason)
+                                                                            {
+                                                                                <td>@lst[DataIndex].OutReason</td>
+                                                                            }
+                                                                            if (Model.inoutdate)
+                                                                            {
+                                                                                <td>@lst[DataIndex].inoutdate</td>
+                                                                            }
+                                                                            if (Model.SuperVisor)
+                                                                            {
+                                                                                <td>@lst[DataIndex].SuperVisor</td>
+                                                                            }
+                                                                            if (Model.immediateSuperVisor)
+                                                                            {
+                                                                                <td>@lst[DataIndex].ImmediateSupper</td>
+                                                                            }
+                                                                            if (Model.BStatus)
+                                                                            {
+                                                                                <td>@lst[DataIndex].Status</td>
+                                                                            }
+                                                                           
+                                                                            if (Model.Comment)
+                                                                            {
+                                                                                <td>@lst[DataIndex].Remark</td>
+                                                                            } 
+                                                                        }
+                                                                    </tr>
+                                                                                    }
+
+                                                                                    currentcount++;
+                                                                                }
+
+                                                                            }
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="13">
+                                            <table class="foottable">
+                                                <tbody>
+                                                    <tr class="color-white">
+                                                        <td> &nbsp; </td>
+                                                        <td> &nbsp; </td>
+                                                        <td> &nbsp; </td>
+                                                    </tr>
+                                                    
+                                                    <tr class="watermark">
+                                                        <td class="text-left">This is a System Generated Document. No signature is Required</td>
+                                                        <td class="text-center">Sierra Construction Limited<br /> Printed on @DateTime.Now.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(DateTime.Now.Month)-@DateTime.Now.Year</td>
+                                                        <td class="text-right">SEMS Powered by SIOT</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr> 
+                                </tfoot>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts{
+    <script src="~/Scripts/reports.js"></script>
+
+
+}
+

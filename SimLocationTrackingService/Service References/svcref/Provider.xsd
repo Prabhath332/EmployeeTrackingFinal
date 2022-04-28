@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://webs.mlocatorwebs.mobitel.family/" targetNamespace="http://webs.mlocatorwebs.mobitel.family/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="GetLocationByNumber" type="tns:GetLocationByNumber" />
+  <xs:element name="GetLocationByNumberResponse" type="tns:GetLocationByNumberResponse" />
+  <xs:complexType name="GetLocationByNumber">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="userName" type="xs:string" />
+      <xs:element minOccurs="0" name="password" type="xs:string" />
+      <xs:element minOccurs="0" name="mobileNumber" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GetLocationByNumberResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

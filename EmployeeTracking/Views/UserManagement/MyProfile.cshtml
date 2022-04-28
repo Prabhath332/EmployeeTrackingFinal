@@ -1,0 +1,267 @@
+﻿@model EmployeeTracking.Models.UserProfileViewModel
+@{
+    ViewBag.Title = "MyProfile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    EmployeeTracking.App_Codes._usermanager um = new EmployeeTracking.App_Codes._usermanager();
+}
+
+<section class="content-header">
+    <h1>
+        My Profile
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Profile Image -->
+            <div class="box box-primary">
+                <div class="box-body box-profile">
+                    <img id="userImg_@Model.ApplicationUser.Id" class="profile-user-img img-responsive img-circle editprofileimage" src="/@Model.UserProfiles.Image" alt="User profile picture">
+                    <h3 class="profile-username text-center">@Model.UserProfiles.FirstName&nbsp;@Model.UserProfiles.LastName</h3>
+                    @if (Model.EmployeementInfos != null)
+                    {
+                        <p class="text-muted text-center">@um.GetRole(Model.ApplicationUser.Roles.FirstOrDefault().RoleId).RoleName</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">Not Defined</p>
+                    }
+
+                    <ul class="list-group list-group-unbordered">
+                        <li class="list-group-item">
+                            @if (Model.UserProfiles.EmployeeId != null)
+                            {
+                                <b>EPF No</b> <a class="pull-right">@Model.UserProfiles.EmployeeId</a>
+                            }
+                            else
+                            {
+                                <b>EPF No</b> <a class="pull-right">Not Defined</a>
+                            }
+
+                        </li>
+                        <li class="list-group-item">
+                            @if (Model.UserProfiles.DateOfBirth != null)
+                            {
+                                <b>Date of Birth</b> <a class="pull-right">@Model.UserProfiles.DateOfBirth.Value.ToShortDateString()</a>
+                            }
+                            else
+                            {
+                                <b>Date of Birth</b> <a class="pull-right">Not Defined</a>
+                            }
+                        </li>
+                        <li class="list-group-item">
+                            @{
+                                int age = 0;
+                                if (Model.UserProfiles.DateOfBirth != null)
+                                {
+                                    age = (DateTime.Now.Year - Model.UserProfiles.DateOfBirth.Value.Year);
+                                    <b>Age</b> <a class="pull-right">@age</a>
+                                }
+                                else
+                                {
+                                    <b>Age</b> <a class="pull-right">Not Defined</a>
+                                }
+                            }
+
+
+                        </li>
+                        <li class="list-group-item">
+                            @if (Model.UserProfiles.Gender != null)
+                            {
+                                <b>Gender</b> <a class="pull-right">@Model.UserProfiles.Gender</a>
+                            }
+                            else
+                            {
+                                <b>Gender</b> <a class="pull-right">Not Defined</a>
+                            }
+                        </li>
+                        <li class="list-group-item">
+                            @if (Model.UserProfiles.MaritalStatus != null)
+                            {
+                                <b>Marital Status</b> <a class="pull-right">@Model.UserProfiles.MaritalStatus</a>
+                            }
+                            else
+                            {
+                                <b>Marital Status</b> <a class="pull-right">Not Defined</a>
+                            }
+                        </li>
+                        <li class="list-group-item">
+                            @if (Model.UserProfiles.NICNo != null)
+                            {
+                                <b>NIC No</b> <a class="pull-right">@Model.UserProfiles.NICNo</a>
+                            }
+                            else
+                            {
+                                <b>NIC No</b> <a class="pull-right">Not Defined</a>
+                            }
+                        </li>
+                    </ul>
+                    
+
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-9">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tabContactInfo" data-toggle="tab">Contact Info</a></li>
+                    <li><a href="#tabEmployeeInfo" data-toggle="tab">Current Job Information</a></li>
+                    <li><a href="#tabEducationalInfo" data-toggle="tab">Educational Info</a></li>
+                    <li><a href="#tabAwards" data-toggle="tab">Awards</a></li>
+                    <li><a href="#tabPromotions" data-toggle="tab">Promotions</a></li>
+                    <li><a href="#tabExperiance" data-toggle="tab">Experience</a></li>
+
+                </ul>
+                <div class="tab-content">
+                    <div class="active tab-pane" id="tabContactInfo">
+                        <div class="form-group">
+                            <label>Email</label>
+                            @Html.EditorFor(model => model.ApplicationUser.Email, new { htmlAttributes = new { @class = "form-control emailadress" } })
+                        </div>
+                        <div class="form-group">
+                            <label>Fixed Telephone No</label>
+                            @Html.EditorFor(model => model.ApplicationUser.PhoneNumber, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile</label>
+                            @Html.EditorFor(model => model.ApplicationUser.MobileNumber, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile Account</label>
+                            @Html.EditorFor(model => model.ApplicationUser.MobileAccount, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            <label>Fax</label>
+                            @Html.EditorFor(model => model.ApplicationUser.FaxNumber, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            @Html.TextAreaFor(model => model.ApplicationUser.Address, new { @class = "form-control", @rows = 6 })
+                        </div>
+
+
+                    </div>
+                    <!-- /.tab-pane -->
+
+                    <div class="tab-pane" id="tabEmployeeInfo">
+                        <div class="form-group">
+                            <label>Division</label>
+                            @Html.DropDownListFor(model => model.EmployeementInfos.Project.Id, Model.UserDivisions, new { @class = "form-control", @disabled = true })
+
+                        </div>
+                        <div class="form-group">
+                            <label>Section</label>
+                            @Html.EditorFor(model => model.EmployeementInfos.Section, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            <label>Designation</label>
+                            @Html.EditorFor(model => model.EmployeementInfos.Designation, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            <label>Job Description</label>
+                            @Html.EditorFor(model => model.EmployeementInfos.JobDescription, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            <label>Present Reporting Location</label>
+                            @Html.EditorFor(model => model.EmployeementInfos.PresentReportingLocation, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            <label>Immediate Reporting Person</label>
+                            @{
+                                var supervisors = um.GetSupervisorList(Model.ApplicationUser.Id);
+                            }
+
+                            @Html.DropDownListFor(model => model.EmployeementInfos.SupervisorId, supervisors, new { @class = "form-control", @disabled = true })
+
+                        </div>
+                        <div class="form-group">
+                            <label>Appointment Date</label>
+                            @try
+                            {
+                                @Html.EditorFor(model => model.EmployeementInfos.AppointmentDate, new { htmlAttributes = new { @class = "form-control date", @Value = Model.EmployeementInfos.AppointmentDate.Value.ToShortDateString() } })
+                            }
+                            catch
+                            {
+                                @Html.EditorFor(model => model.EmployeementInfos.AppointmentDate, new { htmlAttributes = new { @class = "form-control date" } })
+                            }
+
+
+                        </div>
+                        
+                    </div>
+                    <!-- /.tab-pane -->
+                    <div class="tab-pane" id="tabEducationalInfo">
+                        <div class="form-group">
+                            <label>Secondary Education</label>
+                            @Html.EditorFor(model => model.EducationalInfos.Secondary, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            <label>Higher Education</label>
+                            @Html.EditorFor(model => model.EducationalInfos.Other, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Extra Curricular</label>
+                            @Html.EditorFor(model => model.EducationalInfos.ExtraCurricular, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tabAwards">                        
+
+                        <table id="tblAwards" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyAwards"></tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="tabPromotions">                        
+                        <table id="tblPromotion" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Designation</th>
+                                    <th>Date From</th>
+                                    <th>Date To</th>
+                                    <th>Division</th>
+                                    <th>Location</th>
+                                    <th>Remarks</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyPromotions"></tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="tabExperiance">                       
+                        <table id="tblExperiance" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Organization</th>
+                                    <th>Designation</th>
+                                    <th>Date From</th>
+                                    <th>Date To</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodExperiance"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- /.tab-content -->
+            </div>
+            <!-- /.nav-tabs-custom -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+
+
+

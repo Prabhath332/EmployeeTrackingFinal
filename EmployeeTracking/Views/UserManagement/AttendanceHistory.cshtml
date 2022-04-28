@@ -1,0 +1,135 @@
+﻿@model IEnumerable<EmployeeTracking.Models.AttendenceCorrections>
+@{
+    ViewBag.Title = "AttendanceHistory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var cult = System.Globalization.CultureInfo.CurrentCulture;
+}
+
+<section class="content-header">
+    <h1>
+        Attendance History
+    </h1>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Attendance History</h3>
+                    <div class="box-tools pull-right">
+                    </div>
+                </div>
+                <div class="box-body">
+                    @using (Html.BeginForm("AttendanceHistory", "UserManagement", FormMethod.Post, new { id = "frmAttendanceHistory" }))
+                    {
+                        <div class="row" style="margin-bottom:20px;">
+                            <div class="col-md-4">
+                                <input id="txtEmployeeId" class="form-control" name="txtEmployeeId" placeholder="Employee Id" value="" />
+                            </div>
+                            <div class="col-md-4">
+                                <button id="btnGetAttendanceHistory" class="btn btn-info"><i class="fa fa-user"></i>&nbsp;Search User</button>
+                            </div>
+                        </div>
+                    }
+
+                    <table id="tblAttendanceHistory" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                @*<th>EMP No#</th>*@
+                                <th>Name</th>
+                                <th>Date</th>
+                                <th>In Time</th>
+                                <th>In Reason</th>
+                                <th>Out Time</th>
+                                <th>Out Reason</th>
+                                <th>Approved By</th>
+                                @*<th>Reason</th>*@
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendancehistorytbody">
+                            @{
+                                if (Model != null)
+                                {
+                                    if (Model.Count() > 0)
+                                    {
+                                        foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>@item.Username</td>
+                                                <td>@item.Date.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.Date.Month)-@item.Date.Year</td>
+                                                @if (item.InTime.TimeOfDay == TimeSpan.Zero)
+                                                {
+                                                    <td>-</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@item.InTime.ToLongTimeString()</td>
+                                                }
+                                                <td>@item.InReason</td>
+                                                @if (item.OutTime.TimeOfDay == TimeSpan.Zero)
+                                                {
+                                                    <td>-</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@item.OutTime.ToLongTimeString()</td>
+                                                }
+                                                <td>@item.OutReason</td>
+                                                <td>@item.SupervisorName</td>
+                                                <td>
+                                                    <button id="btnDeleteAttendance_@item.Id" class="btn btn-danger btn-sm btnattendancehistory" type="button"><i class="fa fa-times"></i></button>
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="2">No Records Found</td>
+                                        </tr>
+                                    }
+                                }
+
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@using (Html.BeginForm("DeleteAttendance", "UserManagement", FormMethod.Post, new { id = "frmDeleteAttendance", enctype = "multipart/form-data" }))
+{
+        <!--Approve Leave Modal====================================-->
+    <div class="modal fade" id="RejectAttendanceModal" tabindex="-1" role="dialog" aria-labelledby="RejectAttendanceModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="RejectAttendanceModalLabel"><i class="fa fa-times"></i>&nbsp;Delete In/Out</h4>
+                </div>
+                <div class="modal-body">
+                    <input id="hfAttendanceId" type="hidden" name="hfAttendanceId" value="0" />
+                    <div class="form-group">
+                        <label>Remarks</label>
+                        @Html.TextArea("txtRemarks", new { @id = "txtRemarks", @class = "form-control", @rows = 4 })
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnDeleteAttendance" type="button" class="btn btn-danger"><i class="fa fa-times"></i>&nbsp;Delete</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End Approve Leave Modal====================================-->
+
+}

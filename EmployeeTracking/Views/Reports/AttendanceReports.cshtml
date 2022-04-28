@@ -1,0 +1,76 @@
+﻿
+@{
+    ViewBag.Title = "Attendance Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
+    var divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
+}
+<link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
+
+<section class="content-header">
+    <h1>
+        Attendance Reports
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                @*<div class="box-header with-border">
+                    <h3 class="box-title">Request Leave</h3>
+                </div>*@
+                <div class="box-body">
+                    @using (Html.BeginForm("InOutDetails", "Reports", FormMethod.Post, new { id = "frmInOutReport" }))
+                    {
+                        @*<div id="tableavesummery" class="tab-pane active">*@
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <label>From</label>
+                                    <input id="txtDateFrom" name="txtDateFrom" class="form-control date filterdate" />
+                                </div>
+                                @*<label>Year</label>
+                                <select id="ddlYear" name="ddlYear" class="form-control">
+                                    <option value="@DateTime.Now.Year" selected>@DateTime.Now.Year</option>
+                                    <option value="@DateTime.Now.AddYears(-1).Year" selected>@DateTime.Now.AddYears(-1).Year</option>
+                                    <option value="@DateTime.Now.AddYears(-2).Year" selected>@DateTime.Now.AddYears(-2).Year</option>
+                                </select>*@
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <label>To</label>
+                                    <input id="txtDateTo" name="txtDateTo" class="form-control date filterdate" />
+                                </div>
+
+                            </div>
+                        </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Division</label>
+                                        <select id="ddlDivision" name="ddlDivision" class="form-control">
+                                            <option value="0" selected>[All Divisions]</option>
+                                            @foreach (var item in divLst)
+                                            {
+                                                <option value="@item.Id" selected>@item.ProjectName</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3" style="padding-top:24px;">
+                                    <div class="form-group" style="text-align:right;">
+                                        <button id="btnDownloadReport" type="submit" class="btn btn-primary"><i class="fa fa-download"></i>&nbsp;Download</button>
+                                    </div>
+                                </div>
+                               
+                                @*</div>*@
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

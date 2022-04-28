@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:tns="http://webs.mlocatorwebs.mobitel.family/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp1_2="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" name="Provider" targetNamespace="http://webs.mlocatorwebs.mobitel.family/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xsd:schema>
+      <xsd:import schemaLocation="https://mlocator.mobitel.lk:443/mlocator_v3_api/services/Provider?xsd=1" namespace="http://webs.mlocatorwebs.mobitel.family/" />
+    </xsd:schema>
+  </types>
+  <message name="GetLocationByNumber">
+    <part name="parameters" element="tns:GetLocationByNumber" />
+  </message>
+  <message name="GetLocationByNumberResponse">
+    <part name="parameters" element="tns:GetLocationByNumberResponse" />
+  </message>
+  <portType name="Provider">
+    <operation name="GetLocationByNumber">
+      <input wsam:Action="http://webs.mlocatorwebs.mobitel.family/Provider/GetLocationByNumberRequest" message="tns:GetLocationByNumber" />
+      <output wsam:Action="http://webs.mlocatorwebs.mobitel.family/Provider/GetLocationByNumberResponse" message="tns:GetLocationByNumberResponse" />
+    </operation>
+  </portType>
+  <binding name="ProviderPortBinding" type="tns:Provider">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="GetLocationByNumber">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <service name="Provider">
+    <port name="ProviderPort" binding="tns:ProviderPortBinding">
+      <soap:address location="https://mlocator.mobitel.lk:443/mlocator_v3_api/services/Provider" />
+    </port>
+  </service>
+</definitions>

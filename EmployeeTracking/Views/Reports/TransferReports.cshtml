@@ -1,0 +1,66 @@
+﻿
+@{
+    ViewBag.Title = "Transfer Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
+    var divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
+}
+
+<section class="content-header">
+    <h1>
+        Transfer Reports
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+
+                <div class="box-body">
+                    @using (Html.BeginForm("TranferDetails", "Reports", FormMethod.Post, new { id = "frmTranferReport" }))
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Year</label>
+                                    <select id="ddlYear" name="ddlYear" class="form-control">
+                                        <option value="@DateTime.Now.Year" selected>@DateTime.Now.Year</option>
+                                        <option value="@DateTime.Now.AddYears(-1).Year" selected>@DateTime.Now.AddYears(-1).Year</option>
+                                        <option value="@DateTime.Now.AddYears(-2).Year" selected>@DateTime.Now.AddYears(-2).Year</option>
+                                    </select>
+
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                        @*<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Division</label>
+                                <select id="ddlDivision" name="ddlDivision" class="form-control">
+                                    <option value="0" selected>[All Divisions]</option>
+                                    @foreach (var item in divLst)
+                                    {
+                                        <option value="@item.Id" selected>@item.ProjectName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>*@
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" style="text-align:right;">
+                                    <button id="btnDownloadTransferReport" type="submit" class="btn btn-primary"><i class="fa fa-download"></i>&nbsp;Download</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                       
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

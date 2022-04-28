@@ -1,0 +1,232 @@
+﻿@model EmployeeTracking.Models.AttendenceApprovalViewModel
+@{
+    ViewBag.Title = "Leave Approvals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var cult = System.Globalization.CultureInfo.CurrentCulture;
+}
+
+<link href="~/plugins/easy-autocomplete-1.3.5/easy-autocomplete.min.css" rel="stylesheet" />
+<link href="~/plugins/easy-autocomplete-1.3.5/easy-autocomplete.themes.min.css" rel="stylesheet" />
+
+<section class="content-header">
+    <h1>
+        Leave Approvals
+    </h1>
+</section>
+<section class="content">
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">Leaves To Be Approved</h3>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="tblToApproveLeaves" class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Request By</th>
+                                <th>EMP No#</th>
+                                <th>Leave Date</th>
+                                <th># Days</th>
+                                <th>Leave Type</th>
+                                <th>Project</th>
+                                <th>Division</th>
+                                <th>Location</th>
+                                <th>Reason</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.LeaveApprovals.Count() > 0)
+                            {
+                                foreach (var item in Model.LeaveApprovals)
+                                {
+                                    <tr>
+                                        <td>@item.Requester</td>
+                                        <td>@item.EMPNo</td>
+                                        <td>@item.FromDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.FromDate.Month) To @item.ToDate.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.ToDate.Month)</td>
+
+                                        <td>@item.LeaveDays</td>
+                                        <td>@item.LeaveTypeStr</td>
+                                        <td>@item.Project</td>
+                                        <td>@item.Section</td>
+                                        <td>@item.Location</td>
+                                        <td>@item.Reason</td>
+                                        <td>
+                                            <button id="btnLeaveAccept_@item.Id" class="btn btn-success btn-sm btnaccept" title="Accept"><i class="fa fa-thumbs-up"></i></button>
+                                            <button id="btnLeaveCancel_@item.Id" class="btn btn-danger btn-sm btnreject" title="Cancel"><i class="fa fa-times"></i></button>
+                                            <button id="btnLeaveForward_@item.Id" class="btn btn-primary btn-sm btnforwardleave" title="Optional Approval"><i class="fa fa-share"></i></button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="10">No Leave Requests</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">In/Out Correction Requests</h3>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="tblToApproveInOut" class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Request By</th>
+                                <th>EMP No#</th>
+                                <th>Date</th>
+                                <th>In Time</th>
+                                <th>In Reason</th>
+                                <th>Out Time</th>
+                                <th>Out Reason</th>
+                                @*<th>Requested On</th>*@                                
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.InOutApprovals.Count() > 0)
+                            {
+                                foreach (var item in Model.InOutApprovals)
+                                {
+                                    <tr>
+                                        <td>@item.Username</td>
+                                        <td>@item.EmpNo</td>
+                                        <td>@item.InTime.Date.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.InTime.Date.Month)</td>
+                                        <td>@item.InTime.ToShortTimeString()</td>
+                                        <td>@item.InReason</td>
+                                        <td>@item.OutTime.ToShortTimeString()</td>                                        
+                                        <td>@item.OutReason</td>                                        
+                                        <td>
+                                            <button id="btnInOutAccept_@item.Id" class="btn btn-success btn-sm btnacceptinout" title="Accept"><i class="fa fa-thumbs-up"></i></button>
+                                            <button id="btnInOutCancel_@item.Id" class="btn btn-danger btn-sm btnrejectinout" title="Cancel"><i class="fa fa-times"></i></button>
+                                            
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="10">No In/Out Correction Requests</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</section>
+
+@using (Html.BeginForm("ApproveLeave", "Attendance", FormMethod.Post, new { id = "frmApproveLeave", enctype = "multipart/form-data" }))
+{
+        <!--Approve Leave Modal====================================-->
+    <div class="modal fade" id="RejectLeaveModal" tabindex="-1" role="dialog" aria-labelledby="RejectLeaveModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="RejectLeaveModalLabel"><i class="fa fa-times"></i>&nbsp;Reject User Leave</h4>
+                </div>
+                <div class="modal-body">
+                    <input id="hfLeaveId" type="hidden" name="hfLeaveId" value="0" />
+                    <input id="hfIsApprove" type="hidden" name="hfIsApprove" value="0" />
+                    <div class="form-group">
+                        <label>Remarks</label>
+                        @Html.TextArea("txtRemarks", new { @id = "txtRemarks", @class = "form-control", @rows = 4 })
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnRejectLeave" type="button" class="btn btn-danger"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End Approve Leave Modal====================================-->
+
+}
+
+@using (Html.BeginForm("ApproveInOut", "Attendance", FormMethod.Post, new { id = "frmApproveInOut", enctype = "multipart/form-data" }))
+{
+        <!--Approve Leave Modal====================================-->
+    <div class="modal fade" id="RejectInOutModal" tabindex="-1" role="dialog" aria-labelledby="RejectInOutModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="RejectInOutModalLabel"><i class="fa fa-times"></i>&nbsp;Reject In/Out Request</h4>
+                </div>
+                <div class="modal-body">
+                    <input id="hfInOutId" type="hidden" name="hfInOutId" value="0" />
+                    <input id="hfInOutApprove" type="hidden" name="hfInOutApprove" value="0" />
+                    <div class="form-group">
+                        <label>Remarks</label>
+                        @Html.TextArea("txtInOutRemarks", new { @id = "txtInOutRemarks", @class = "form-control", @rows = 4 })
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnRejectInOut" type="button" class="btn btn-danger"><i class="fa fa-times"></i>&nbsp;Reject</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End Approve Leave Modal====================================-->
+
+}
+
+@using (Html.BeginForm("ForwardLeave", "Attendance", FormMethod.Post, new { id = "frmForwardLeave", enctype = "multipart/form-data" }))
+{
+        <!--New User Modal====================================-->
+    <div class="modal fade" id="ForwardLeaveModal" tabindex="-1" role="dialog" aria-labelledby="ForwardLeaveModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="ForwardLeaveModalLabel"><i class="fa fa-tasks"></i>&nbsp;Optional Approval</h4>
+                </div>
+                <div class="modal-body">
+                    <input id="hfForwardLeaveId" type="hidden" name="hfForwardLeaveId" value="0" /> 
+                    <input id="hfForwardTo" type="hidden" name="hfForwardTo" value="0" />  
+                    <input id="hfLeaveUserId" name="hfLeaveUserId" type="hidden" value="@Session["UserId"].ToString()" />                 
+                    <div class="form-group">
+                        <label>Supervisor</label>
+                        <input id="txtForwardTo" name="txtForwardTo" type="text" class="form-control" style="width:100%;" />
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnForwardLeave" type="button" class="btn btn-primary"><i class="fa fa-share"></i>&nbsp;Request</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End New User Modal====================================-->
+
+}
+
+@section scripts
+{
+    <script src="~/plugins/easy-autocomplete-1.3.5/jquery.easy-autocomplete.min.js"></script>
+}

@@ -1,0 +1,134 @@
+﻿@model IEnumerable<EmployeeTracking.Models.TeamMemberViewModels>
+@{
+    ViewBag.Title = "TeamMembers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ACRYPTO.ACRYPTO crypto = new ACRYPTO.ACRYPTO();
+
+    ViewBag.TeamId = TempData["TeamId"].ToString();
+    //ViewBag.DivisionId = TempData["DivisionId"].ToString();
+}
+
+<section class="content-header">
+    <h1>
+        Manage Team Members
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Team Members</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row" style="margin-bottom:20px;">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button id="btnNewTeamMember" class="btn btn-info"><i class="fa fa-user-plus"></i>&nbsp;Add New TeamMember</button>
+                        </div>
+                    </div>
+                    <table id="tblTeamMember" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>EPF No</th>
+                                <th>Full Name</th>
+                                <th>Phone</th>
+                                <th style="width: 35%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="memberstbody">
+                            @{
+                                try
+                                {
+                                    if (Model.Count() > 0)
+                                    {
+                                        foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td>@item.EPFNo</td>
+                                                <td>@item.MemberName</td>
+                                                <td>@item.MobilePhone</td>
+
+                                                <td>
+                                                    <a href="@Url.Action("RemoveUserFromTeam", "Divisions", new { @UserId = item.UserId, @TeamId = item.TeamId})" id="hRemoveTeamUser_@item.UserId" class="btn btn-danger btn-sm"><i class="fa fa-close"></i></a>
+                                                    &nbsp;
+                                                @if (Convert.ToBoolean(item.IsSupervisor))
+                                                {
+                                                    <button class="btn btn-sm btn-default disabled">Team Supervisor</button>
+                                                }
+                                                else
+                                                {
+                                                    <a href="@Url.Action("MakeSupervisor", "Divisions", new { @UserId = item.UserId, @TeamId = item.TeamId})" id="hMakeSupervisor_@item.UserId" class="btn bg-navy btn-sm">Make Supervisor</a>
+                                                }
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    }
+                                }
+                                catch
+                                {
+
+                                }
+
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@using (Html.BeginForm("AddTeamMember", "Divisions", FormMethod.Post, new { id = ViewBag.TeamId, @class = "frmTeamMembers", @x = ViewBag.DivisionId }))
+{
+        <!--New Team Modal====================================-->
+    <div class="modal fade" id="TeamMemebersModal" tabindex="-1" role="dialog" aria-labelledby="TeamMemebersModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="TeamMemebersModalLabel"><i class="fa fa-power-off"></i>&nbsp;Team Details</h4>
+                </div>
+
+                <div id="projectUsersModelBody" class="modal-body">
+                    <div id="preLoader" style="text-align: center;margin-top: 50px;"></div>
+                    <input id="hfTeamId" name="hfTeamId" type="hidden" value="@ViewBag.TeamId" />
+                    <input id="hfDivisionId" name="hfDivisionId" type="hidden" value="@ViewBag.DivisionId" />
+                    <input id="hfUserId" name="hfUserId" type="hidden" value="0" />
+                    <div id="divPrUsers">
+                        <table id="tblProjectUsers" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th style="width: 35%;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectUserstbody">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    @*<button id="btnSaveTeam" name="btnSaveTeam" type="button" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Save</button>*@
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- End Team Modal====================================-->
+
+}

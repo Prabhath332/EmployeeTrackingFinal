@@ -1,0 +1,356 @@
+﻿@model EmployeeTracking.Models.LeaveBalanceViewModel
+
+@{
+    var cult = System.Globalization.CultureInfo.CurrentCulture;
+
+    ViewBag.Title = "MonthlyBreackdownSummery";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <form method="post" name="frmBalanceLeaves" action="MonthlyBreackdownSummery">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Division Name</label>
+                            <select id="Division" name="Division" class="form-control">
+                                <option value="0" selected>[All Divisions]</option>
+                                @foreach (var item in Model.Divisions)
+                                {
+                                    <option value="@item.Id">@item.ProjectName</option>
+                                }
+                            </select>
+                            @Html.HiddenFor(m => m.DivisionName)
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Location</label>
+                            <select id="Location" name="Location" class="form-control">
+                                <option value="0" selected>[All Locations]</option>
+                                @foreach (var item in Model.Locations)
+                                {
+                                    <option value="@item.Location">@item.Location</option>
+                                }
+                            </select>
+                            @Html.HiddenFor(m => m.LocationName)
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Year</label>
+                            <select id="Year" name="Year" class="form-control">
+                                @for (int i = 0; i <= 3; i++)
+                                {
+                                    var thisYear = DateTime.Now.Year;
+
+                                    if (i == 0)
+                                    {
+                                        <option value="@thisYear" selected>@thisYear</option>
+                                    }
+                                    else
+                                    {
+                                        thisYear -= i;
+                                        <option value="@thisYear">@thisYear</option>
+                                    }
+
+                                }
+                               
+                            </select>
+                        </div>
+                    </div>
+
+                    @*<div class="col-md-4">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="CboStatus" name="Status" class="form-control">
+                                <option value="All" selected>[All Status]</option>
+                                <option value="true">Approved</option>
+                                <option value="pending">Pending</option>
+                                <option value="false">Rejected</option>
+                                <option value="cancel">Cancel</option>
+                            </select>
+                            @Html.HiddenFor(m => m.StatusView)
+                        </div>
+                    </div>*@
+
+                </div>
+
+
+            </div>
+            <div class="panel-footer">
+                <button id="btnFilter" name="view" class="btn btn-primary" type="submit">View Report</button>
+                <button id="btnFilter" class="btn btn-primary" type="submit">Download Report</button> 
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-body">
+                <div class="col-md-12"> 
+                        <div class="form-group reportbody">  
+                            <div id="printPriview" class="overfolow-y-auto">
+                                <table class="reportTable table lv-dt-tbl" id="report">
+                                    <thead> 
+                                        <tr class="nobod">
+                                            <th class="color-white"> &nbsp;</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+
+                                        <tr  class="nobod">
+                                            <th rowspan="5" colspan="2">
+                                                <img src="~/Content/Images/sierrs.png" height="100" />
+                                            </th>
+                                            <th colspan="2" class="text-right">Division Name : </th>
+                                            <th colspan="5"> @((ViewBag.Division != null)?ViewBag.Division : "")</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        <tr  class="nobod"> 
+                                            <th  colspan="2"  class="text-right">Location : </th>
+                                            <th colspan="5"> @((ViewBag.Location != null) ? ViewBag.Location : "")</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+
+                                        </tr>
+                                        <tr  class="nobod">
+
+                                            <th  colspan="2"  class="text-right">Year : </th>
+                                            <th colspan="5"> @((ViewBag.Year != null) ? ViewBag.Year : "")</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+
+                                        </tr>
+                                        <tr></tr>
+                                        <tr></tr>
+
+                                        <tr>
+                                            <th rowspan="2">Employee No</th>
+                                            <th rowspan="2">Employee Name</th>
+
+                                            <th colspan="2">Allocated</th>
+                                            <th colspan="4">January</th>
+                                            <th colspan="4">February</th>
+                                            <th colspan="4">March</th>
+                                            <th colspan="4">April</th>
+                                            <th colspan="4">May</th>
+                                            <th colspan="4">June</th>
+                                            <th colspan="4">July</th>
+                                            <th colspan="4">August</th>
+                                            <th colspan="4">September</th>
+                                            <th colspan="4">October</th>
+                                            <th colspan="4">November</th>
+                                            <th colspan="4">December</th>
+                                            <th colspan="4">Total</th>
+                                            <th colspan="4">Balance</th>
+                                        </tr>
+                                     
+
+                                        <tr class="heattext">
+                                            
+                                            <th>Annual</th>
+                                            <th>Cassual</th>
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+                                            
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+
+                                            <th>AN</th>
+                                            <th>CA</th>
+                                            <th>SAN</th>
+                                            <th>NOP</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                            @{
+                                                if (Model.ReportData != null)
+                                                {
+                                                    foreach (System.Data.DataRow drow in Model.ReportData.Rows)
+                                                    {
+                                                        <tr>
+                                                            <td>@drow["Employee No"]</td>
+                                                            <td>@drow["Employee Name"]</td>
+                                                            <td>@drow["Annual"]</td>
+                                                            <td>@drow["Cassual"]</td>
+                                                            <td>@drow["jan-AN"]</td>
+                                                            <td>@drow["jan-CA"]</td>
+                                                            <td>@drow["jan-SAN"]</td>
+                                                            <td>@drow["jan-NOP"]</td>
+                                                            <td>@drow["feb-AN"]</td>
+                                                            <td>@drow["feb-CA"]</td>
+                                                            <td>@drow["feb-SAN"]</td>
+                                                            <td>@drow["feb-NOP"]</td>
+                                                            <td>@drow["mar-AN"]</td>
+                                                            <td>@drow["mar-CA"]</td>
+                                                            <td>@drow["mar-SAN"]</td>
+                                                            <td>@drow["mar-NOP"]</td>
+                                                            <td>@drow["apr-AN"]</td>
+                                                            <td>@drow["apr-CA"]</td>
+                                                            <td>@drow["apr-SAN"]</td>
+                                                            <td>@drow["apr-NOP"]</td>
+                                                            <td>@drow["may-AN"]</td>
+                                                            <td>@drow["may-CA"]</td>
+                                                            <td>@drow["may-SAN"]</td>
+                                                            <td>@drow["may-NOP"]</td>
+                                                            <td>@drow["Jun-AN"]</td>
+                                                            <td>@drow["Jun-CA"]</td>
+                                                            <td>@drow["Jun-SAN"]</td>
+                                                            <td>@drow["Jun-NOP"]</td>
+                                                            <td>@drow["jul-AN"]</td>
+                                                            <td>@drow["jul-CA"]</td>
+                                                            <td>@drow["jul-SAN"]</td>
+                                                            <td>@drow["jul-NOP"]</td>
+                                                            <td>@drow["aug-AN"]</td>
+                                                            <td>@drow["aug-CA"]</td>
+                                                            <td>@drow["aug-SAN"]</td>
+                                                            <td>@drow["aug-NOP"]</td>
+                                                            <td>@drow["sep-AN"]</td>
+                                                            <td>@drow["sep-CA"]</td>
+                                                            <td>@drow["sep-SAN"]</td>
+                                                            <td>@drow["sep-NOP"]</td>
+                                                            <td>@drow["oct-AN"]</td>
+                                                            <td>@drow["oct-CA"]</td>
+                                                            <td>@drow["oct-SAN"]</td>
+                                                            <td>@drow["oct-NOP"]</td>
+                                                            <td>@drow["nov-AN"]</td>
+                                                            <td>@drow["nov-CA"]</td>
+                                                            <td>@drow["nov-SAN"]</td>
+                                                            <td>@drow["nov-NOP"]</td>
+                                                            <td>@drow["dec-AN"]</td>
+                                                            <td>@drow["dec-CA"]</td>
+                                                            <td>@drow["dec-SAN"]</td>
+                                                            <td>@drow["dec-NOP"]</td>
+                                                            <td>@drow["tot-AN"]</td>
+                                                            <td>@drow["tot-CA"]</td>
+                                                            <td>@drow["tot-SAN"]</td>
+                                                            <td>@drow["tot-NOP"]</td>
+                                                            <td>@drow["bal-AN"]</td>
+                                                            <td>@drow["bal-CA"]</td>
+                                                            <td>@drow["bal-SAN"]</td>
+                                                            <td>@drow["bal-NOP"]</td>
+                                                        </tr>
+                                                    }
+                                                }
+
+                                            }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="13">
+                                                <table class="foottable">
+                                                    <tbody>
+                                                        <tr class="color-white">
+                                                            <td> &nbsp; </td>
+                                                            <td> &nbsp; </td>
+                                                            <td> &nbsp; </td>
+                                                        </tr>
+
+                                                        @*<tr class="watermark">
+                                                            <td class="text-left">This is a System Generated Document. No signature is Required</td>
+                                                            <td class="text-center">Sierra Construction Limited<br /> Printed on @DateTime.Now.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(DateTime.Now.Month)-@DateTime.Now.Year</td>
+                                                            <td class="text-right">SEMS Powered by SIOT</td>
+                                                        </tr>*@
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+
+                        </div> 
+                </div>
+            </div>
+        </div>
+
+    </form>
+    
+</section>
+

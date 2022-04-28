@@ -1,0 +1,351 @@
+﻿@model EmployeeTracking.Models.ApprovalsViewModel
+
+@{
+    ViewBag.Title = "In/Out Corrections";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var cult = System.Globalization.CultureInfo.CurrentCulture;
+}
+
+<link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
+<link href="~/plugins/timepicki/timepicki.css" rel="stylesheet" />
+<link href="~/plugins/easy-autocomplete-1.3.5/easy-autocomplete.min.css" rel="stylesheet" />
+<link href="~/plugins/easy-autocomplete-1.3.5/easy-autocomplete.themes.min.css" rel="stylesheet" />
+
+<section class="content-header">
+    <h1>
+        In/Out Corrections
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-7">
+            @using (Html.BeginForm("CorrectInOut", "Attendance", FormMethod.Post, new { id = "frmCorrectInOut", enctype = "multipart/form-data" }))
+            {
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">In/Out Correction</h3>
+                    </div>
+                    <div class="box-body">
+                        <input id="hfInOutUserId" class="userid" name="hfInOutUserId" type="hidden" value="@Session["UserId"].ToString()" />
+                        
+                        @Html.HiddenFor(model => model.AttendenceCorrections.SupervisorId, new { @id = "hfLeaveSupervisorId", @class = "supervisorid" })
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Date</label>
+                                    @Html.EditorFor(model => model.AttendenceCorrections.Date, new { htmlAttributes = new { @class = "form-control date futdis", @id = "txtDate" } })
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Supervisor</label>
+                                    <input id="txtSupervisor" name="txtSupervisor" type="text" class="form-control supervisor" style="width:100%;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>In Time</label>                                    
+                                    @Html.EditorFor(model => model.AttendenceCorrections.InTime, new { htmlAttributes = new { @class = "form-control time", @id = "txtInTime", @style = "width:100%;" } })
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label>Reason</label>
+                                    @Html.TextAreaFor(model => model.AttendenceCorrections.InReason, new { @class = "form-control", @id = "txtInReason", @rows = 4 })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Out Time</label>
+                                    @Html.EditorFor(model => model.AttendenceCorrections.OutTime, new { htmlAttributes = new { @class = "form-control time", @id = "txtOutTime", @style = "width:100%;" } })
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label>Reason</label>
+                                    @Html.TextAreaFor(model => model.AttendenceCorrections.OutReason, new { @class = "form-control", @id = "txtOutReason", @rows = 4 })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">                            
+
+                            <div class="col-md-12">
+                                <div class="form-group" style="text-align:right;">
+                                    <button id="btnRequestInOut" type="button" class="btn btn-primary"><i class="fa fa-level-up"></i>&nbsp;Send Request</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    @{
+                        var cancelCount = Model.InOutApprovals.Where(x => x.IsApproved == "false").Count();
+                    }
+                    <li class="active"><a href="#tabinoutpending" data-toggle="tab">Pending&nbsp;&nbsp;<span class="badge bg-light-blue">@Model.InOutApprovals.Where(x => x.IsApproved == "pending").Count()</span></a></li>
+                    <li><a href="#tabinoutcanceled" data-toggle="tab">Rejecteds&nbsp;&nbsp;<span class="badge bg-light-blue">@cancelCount</span></a></li>
+                    <li><a href="#tabinoutapproved" data-toggle="tab">Approved&nbsp;&nbsp;<span class="badge bg-light-blue">@Model.InOutApprovals.Where(x => x.IsApproved == "true").Count()</span></a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tabinoutpending" class="tab-pane active">
+                        <table id="tblPendingInOut" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Supervisor</th>                                    
+                                    <th>Date</th>
+                                    <th>In Time</th>
+                                    <th>In Reason</th>
+                                    <th>Out Time</th>
+                                    <th>Out Reason</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.InOutApprovals.Count > 0)
+                                {
+                                    foreach (var item in Model.InOutApprovals)
+                                    {
+                                        if (item.IsApproved == "pending")
+                                        {
+                                            <tr>
+                                                <td>@item.SupervisorName</td>
+                                                @*<td>@item.InTime.Date.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.InTime.Date.Month)</td>*@
+                                                <td>@item.Date.Date.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.Date.Date.Month)</td>
+                                               
+                                                @if (!string.IsNullOrEmpty(item.InReason))
+                                                {
+                                                    <td>@item.InTime.ToShortTimeString()</td>
+                                                    <td>@item.InReason</td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2">-</td>
+                                                    
+                                                }
+
+                                                @if (!string.IsNullOrEmpty(item.OutReason))
+                                                {
+                                                    <td>@item.OutTime.ToShortTimeString()</td>
+                                                    <td>@item.OutReason</td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2">-</td>
+
+                                                }
+                                                                                                
+                                                <td><button id="btnCacelInOut_@item.Id" class="btn btn-danger btncancelinout" type="button"><i class="fa fa-close"></i></button></td>                                  
+                                            </tr>
+                                        }
+
+                                    }
+
+                                    if (Model.InOutApprovals.Where(x => x.IsApproved == "pending").Count() == 0)
+                                    {
+                                        <tr><td colspan="6">No Data Available</td></tr>
+                                    }
+
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tabinoutcanceled" class="tab-pane">
+                        <table id="tblCanceledInOut" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Supervisor</th>
+                                    <th>Date</th>
+                                    <th>In Time</th>
+                                    <th>In Reason</th>
+                                    <th>Out Time</th>
+                                    <th>Out Reason</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.InOutApprovals.Count > 0)
+                                {
+                                    foreach (var item in Model.InOutApprovals)
+                                    {
+                                        if (item.IsApproved == "false")
+                                        {
+                                            <tr>
+                                                <td>@item.SupervisorName</td>
+                                                @*<td>@item.InTime.Date.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.InTime.Date.Month)</td>*@
+
+                                                <td>@item.Date.Date.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.Date.Date.Month)</td>
+
+                                                @if (!string.IsNullOrEmpty(item.InReason))
+                                                {
+                                                    <td>@item.InTime.ToShortTimeString()</td>
+                                                    <td>@item.InReason</td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2">-</td>
+
+                                                }
+
+                                                @if (!string.IsNullOrEmpty(item.OutReason))
+                                                {
+                                                    <td>@item.OutTime.ToShortTimeString()</td>
+                                                    <td>@item.OutReason</td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2">-</td>
+
+                                                }
+
+                                                @*<td>@item.InTime.ToShortTimeString()</td>
+                                                <td>@item.InReason</td>
+                                                <td>@item.OutTime.ToShortTimeString()</td>
+                                                <td>@item.OutReason</td>*@
+                                                <td>@item.Remarks</td>
+                                            </tr>
+                                        }
+
+                                    }
+
+                                    if (Model.InOutApprovals.Where(x => x.IsApproved == "false").Count() == 0)
+                                    {
+                                        <tr><td colspan="6">No Data Available</td></tr>
+                                    }
+
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tabinoutapproved" class="tab-pane">
+                        <table id="tblApprovedInOut" class="table table-bordered table-responsive" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Supervisor</th>
+                                    <th>Date</th>
+                                    <th>In Time</th>
+                                    <th>In Reason</th>
+                                    <th>Out Time</th>
+                                    <th>Out Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.InOutApprovals.Count > 0)
+                                {
+                                    foreach (var item in Model.InOutApprovals)
+                                    {
+                                        if (item.IsApproved == "true")
+                                        {
+                                            <tr>
+                                                <td>@item.SupervisorName</td>
+                                                @*<td>@item.InTime.Date.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.InTime.Date.Month)</td>*@
+
+                                                <td>@item.Date.Date.Day-@cult.DateTimeFormat.GetAbbreviatedMonthName(item.Date.Date.Month)</td>
+
+                                                @if (item.InTime.TimeOfDay.Ticks != 0)
+                                                {
+                                                    <td>@item.InTime.ToShortTimeString()</td>
+                                                    <td>@item.InReason</td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2">-</td>
+
+                                                }
+
+                                                @if (item.OutTime.TimeOfDay.Ticks != 0)
+                                                {
+                                                    <td>@item.OutTime.ToShortTimeString()</td>
+                                                    <td>@item.OutReason</td>
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="2">-</td>
+
+                                                }
+
+                                                @*<td>@item.InTime.ToShortTimeString()</td>
+                                                <td>@item.InReason</td>
+                                                <td>@item.OutTime.ToShortTimeString()</td>
+                                                <td>@item.OutReason</td>*@
+                                            </tr>
+                                        }
+
+                                    }
+
+                                    if (Model.InOutApprovals.Where(x => x.IsApproved == "true").Count() == 0)
+                                    {
+                                        <tr><td colspan="6">No Data Available</td></tr>
+                                    }
+
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @*<div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Pending Leaves</h3>
+                    </div>
+                    <div class="box-body">
+
+                    </div>
+                </div>*@
+        </div>
+    </div>
+</section>
+
+@using (Html.BeginForm("CancelInOut", "Attendance", FormMethod.Post, new { id = "frmApproveInOut", enctype = "multipart/form-data" }))
+{
+        <!--Approve Leave Modal====================================-->
+    <div class="modal fade" id="RejectInOutModal" tabindex="-1" role="dialog" aria-labelledby="RejectInOutModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="RejectInOutModalLabel"><i class="fa fa-times"></i>&nbsp;Reject In/Out Request</h4>
+                </div>
+                <div class="modal-body">
+                    <input id="hfInOutId" type="hidden" name="hfInOutId" value="0" />
+                    <input id="hfInOutApprove" type="hidden" name="hfInOutApprove" value="0" />
+                    <div class="form-group">
+                        <label>Remarks</label>
+                        @Html.TextArea("txtInOutRemarks", new { @id = "txtInOutRemarks", @class = "form-control", @rows = 4 })
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="btnCancelInOut" type="button" class="btn btn-danger"><i class="fa fa-times"></i>&nbsp;Cancel Request</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- End Approve Leave Modal====================================-->
+
+
+}
+@section scripts
+{
+    <script src="~/plugins/easy-autocomplete-1.3.5/jquery.easy-autocomplete.min.js"></script>
+
+}

@@ -1,0 +1,112 @@
+﻿@{
+    ViewBag.Title = "About";
+}
+
+<section class="content">
+    <div class="box" style="text-align: center;">
+        @*<table id="tblUsers" class="table table-bordered table-responsive tbl" width="100%" cellspacing="0">
+
+        </table>*@
+        
+        <div class="box-body">
+            
+        </div>
+    </div>
+
+    <div id="userList" class="row">
+        @*<div class="col-md-4">           
+            <div class="box box-widget widget-user">                
+                <div class="widget-user-header bg-aqua-active">
+                    <h3 class="widget-user-username">Alexander Pierce</h3>
+                    <h5 class="widget-user-desc">Founder &amp; CEO</h5>
+                </div>
+                <div class="widget-user-image">
+                    <img class="img-circle" src="../dist/img/user1-128x128.jpg" alt="User Avatar">
+                </div>
+                <div class="box-footer">
+                    <div class="row">
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header">3,200</h5>
+                                <span class="description-text">SALES</span>
+                            </div>                           
+                        </div>                        
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header">13,000</h5>
+                                <span class="description-text">FOLLOWERS</span>
+                            </div>                            
+                        </div>                        
+                        <div class="col-sm-4">
+                            <div class="description-block">
+                                <h5 class="description-header">35</h5>
+                                <span class="description-text">PRODUCTS</span>
+                            </div>                            
+                        </div>                        
+                    </div>                    
+                </div>
+            </div>            
+        </div>*@
+    </div>
+</section>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            var pageIndex = 1;
+            var pageSize = 50;
+
+            getAllUsers(pageIndex, pageSize);
+
+            $(window).scroll(function () {
+                if($(window).scrollTop() == $(document).height() - $(window).height())
+                {
+                    pageIndex += 1;
+                    getAllUsers(pageIndex, pageSize);
+                }
+
+            });
+
+            function getAllUsers(pageindex, pagesize)
+            {
+                $.get("http://localhost:58131/api/tracker/GetAllUsers?pageIndex=" + pageindex + "&pageSize=" + pagesize, function (data) {
+                    console.log(data);
+
+                    var str = '';
+
+                    $.each(data, function (index) {
+
+                        str += '<div class="col-md-4">'+           
+                                '<div class="box box-widget widget-user">'+                
+                                    '<div class="widget-user-header bg-aqua-active">'+
+                                        '<h3 class="widget-user-username">' + data[index].FirstName + '</h3>' +
+                                        '<h5 class="widget-user-desc">' + data[index].EmployeeId + '</h5></div>' +
+                                    '<div class="widget-user-image">' +
+                                            '<img class="img-circle" src="/Content/ProfileImages/def_profile.png" alt="User Avatar">' +
+                                            '</div>'+
+                                            '<div class="box-footer">'+
+                                            '<div class="row">'+
+                                            '<div class="col-sm-4 border-right">'+
+                                            '<div class="description-block">'+
+                                            '<h5 class="description-header">3,200</h5>'+
+                                            '<span class="description-text">SALES</span>'+
+                                                    '</div></div>'+                       
+                                            '<div class="col-sm-4 border-right">'+
+                                                '<div class="description-block">'+
+                                                    '<h5 class="description-header">13,000</h5>'+
+                                                    '<span class="description-text">FOLLOWERS</span>'+
+                                                '</div></div>'+                        
+                                            '<div class="col-sm-4">'+
+                                                '<div class="description-block">'+
+                                                    '<h5 class="description-header">35</h5>'+
+                                                    '<span class="description-text">PRODUCTS</span>'+
+                                                '</div></div></div></div></div></div>';
+                    });
+
+                    $("#userList").append(str);
+                });
+            }
+        });
+    </script>
+    }
