@@ -10,7 +10,7 @@ namespace EmployeeTracking.Controllers
 {
     [Authorize]
     [AdminAuthorization]
-    [SessionExpireFilter]
+  //  [SessionExpireFilter]
     public class NewsController : Controller
     {
         // GET: News

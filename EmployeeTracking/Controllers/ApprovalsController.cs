@@ -46,7 +46,6 @@ namespace EmployeeTracking.Controllers
                 }
             }
 
-
             if (lv.ApproveLeave(model))
             {
                 if(model.IsApproved == "true")

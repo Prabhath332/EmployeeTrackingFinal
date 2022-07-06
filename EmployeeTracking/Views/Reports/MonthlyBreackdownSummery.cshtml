@@ -1,10 +1,36 @@
 ﻿@model EmployeeTracking.Models.LeaveBalanceViewModel
 
 @{
-    var cult = System.Globalization.CultureInfo.CurrentCulture;
+   // var cult = System.Globalization.CultureInfo.CurrentCulture;
 
     ViewBag.Title = "MonthlyBreackdownSummery";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
+    EmployeeTracking.App_Codes._reports rpt = new EmployeeTracking.App_Codes._reports();
+
+
+
+    List<EmployeeTracking.Models.Project> divLst = new List<EmployeeTracking.Models.Project>();
+    List<EmployeeTracking.Models.SiteLocation> siteLst = new List<EmployeeTracking.Models.SiteLocation>();
+
+
+    if (User.IsInRole("Site Admin"))
+    {
+        divLst = pr.GetProjectsById(Convert.ToInt32(Session["DivisionId"].ToString()));
+        siteLst = pr.GetLocationsById(Session["Location"].ToString());
+    }
+    else
+    {
+        divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
+        siteLst = rpt.GetAllSiteLocations();
+    }
+
+
+
+    var DivisionCodes = rpt.GetdivisionCodes();
+    var cult = System.Globalization.CultureInfo.CurrentCulture;
+
 }
 
 <section class="content">
@@ -16,10 +42,21 @@
                         <div class="form-group">
                             <label>Division Name</label>
                             <select id="Division" name="Division" class="form-control">
-                                <option value="0" selected>[All Divisions]</option>
-                                @foreach (var item in Model.Divisions)
+                                @if (User.IsInRole("Site Admin"))
                                 {
-                                    <option value="@item.Id">@item.ProjectName</option>
+                                    foreach (var item in divLst)
+                                    {
+                                        <option value="@item.Id">@item.ProjectName</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="0" selected>[All Divisions]</option>
+
+                                    foreach (var item in divLst)
+                                    {
+                                        <option value="@item.Id">@item.ProjectName</option>
+                                    }
                                 }
                             </select>
                             @Html.HiddenFor(m => m.DivisionName)
@@ -29,10 +66,20 @@
                         <div class="form-group">
                             <label>Location</label>
                             <select id="Location" name="Location" class="form-control">
-                                <option value="0" selected>[All Locations]</option>
-                                @foreach (var item in Model.Locations)
+                                @if (User.IsInRole("Site Admin"))
                                 {
-                                    <option value="@item.Location">@item.Location</option>
+                                    foreach (var item in siteLst)
+                                    {
+                                        <option value="@item.Id">@item.Location</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="0" selected>[All Locations]</option>
+                                    foreach (var item in siteLst)
+                                    {
+                                        <option value="@item.Id">@item.Location</option>
+                                    }
                                 }
                             </select>
                             @Html.HiddenFor(m => m.LocationName)

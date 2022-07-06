@@ -77,6 +77,9 @@ namespace EmployeeTracking.Models
         public Boolean SuperVisor { get; set; }
         public Boolean Comment { get; set; }
 
+        //public EmployeementInfo EmployeementInfos { get; set; }
+
+        //public List<SelectListItem> UserDivisions { get; set; }
         public List<Leave> LeaveResult { get; set; }
     }
 

@@ -1,11 +1,10 @@
 ﻿@model EmployeeTracking.Models.MyLeavesViewModel
+
 @{
     ViewBag.Title = "Leave Requests";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var cult = System.Globalization.CultureInfo.CurrentCulture;
-
-
 }
 <link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
 <link href="~/plugins/easy-autocomplete-1.3.5/easy-autocomplete.min.css" rel="stylesheet" />
@@ -43,7 +42,6 @@
                         </select>
                     </div>
                 </div>
-
             </div>
             <div id="divLeaveDetails" class="row">
                 <div class="col-md-12">
@@ -77,13 +75,13 @@
 
                     </div>
                 </div>
-
-
-
                 <div class="col-md-12">
                     <div class="form-group">
                         <label>Supervisor</label>
-                        <input id="txtSupervisor" name="txtSupervisor" type="text" class="form-control" style="width:100%;" />
+                       <input id="txtSupervisor" name="txtSupervisor" type="text" class="form-control" style="width:100%;" />
+
+                        @*@Html.EditorFor(model => model.LeaveHistory.CoveredBy, new { htmlAttributes = new { @class = "form-control", @id = "txtCoveredBy" } })*@
+
                     </div>
                 </div>
 
@@ -107,8 +105,6 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
 }

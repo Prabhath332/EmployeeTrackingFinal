@@ -43,17 +43,20 @@ namespace EmployeeTracking.App_Codes {
             }
         }
 
+
+
         public List<Project> GetProjects() {
             try {
                 using (ApplicationDbContext db = new Models.ApplicationDbContext()) {
 
                     return db.Projects.ToList();
                 }
-
             } catch (Exception er) {
                 return null;
             }
         }
+
+
 
         public List<Project> GetProjects(int CompanyId)
         {
@@ -68,10 +71,54 @@ namespace EmployeeTracking.App_Codes {
                     else
                     {
                         return db.Projects.ToList();
-                    }
-                    
+                    }                   
                 }
+            }
+            catch (Exception er)
+            {
+                return null;
+            }
+        }
 
+
+        public List<Project> GetProjectsById(int ProjectId)
+        {
+            try
+            {
+                using (ApplicationDbContext db = new Models.ApplicationDbContext())
+                {
+                    if (ProjectId != 0)
+                    {
+                        return db.Projects.Where(x => x.Id == ProjectId).ToList();
+                    }
+                    else
+                    {
+                        return db.Projects.ToList();
+                    }
+                }
+            }
+            catch (Exception er)
+            {
+                return null;
+            }
+        }
+
+
+        public List<SiteLocation> GetLocationsById(string Location)
+        {
+            try
+            {
+                using (ApplicationDbContext db = new Models.ApplicationDbContext())
+                {
+                    if (Location != null)
+                    {
+                        return db.SiteLocations.Where(x => x.Location.ToLower() == Location.ToLower()).ToList();
+                    }
+                    else
+                    {
+                        return db.SiteLocations.ToList();
+                    }
+                }
             }
             catch (Exception er)
             {
@@ -109,7 +156,6 @@ namespace EmployeeTracking.App_Codes {
 
                                 lst.Add(pu);
                             }
-
                         }
                     }
                     else
@@ -348,8 +394,6 @@ namespace EmployeeTracking.App_Codes {
                         db.TeamMembers.Add(new Models.TeamMember { TeamId = TeamId, ProjectId = DivisionId, UserId = UserId, IsSupervisor = false });
                         db.SaveChanges();
                     }
-
-
                 }
 
                 return true;
@@ -371,9 +415,7 @@ namespace EmployeeTracking.App_Codes {
                         db.ProjectTeams.Add(model);
                         db.SaveChanges();
                     }
-
                 }
-
                 return true;
             } catch (Exception er) {
                 return false;
@@ -495,10 +537,8 @@ namespace EmployeeTracking.App_Codes {
                                 lst.Add(msguser);
                             }
                            
-                        }
-                        
-                    }
-                    
+                        }                        
+                    }                    
                 }
                 return lst;
             } catch (Exception er) {

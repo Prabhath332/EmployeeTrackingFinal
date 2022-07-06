@@ -25,9 +25,10 @@ namespace EmployeeTracking.Models
         public virtual LeaveType LeaveType1 { get; set; }
     }
 
+    //[Table(name: "NoPayLeaves")]
     public class Employee_NoPay_Leaves
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int Request_Id { get; set; }
         public double No_Pay_Count { get; set; }

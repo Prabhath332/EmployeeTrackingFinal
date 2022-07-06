@@ -1651,6 +1651,8 @@ namespace EmployeeTracking.Controllers
                         intRowNumber++;
                     }
 
+
+
                     ReportStamp(intRowNumber, intColumnNumber, exlWs);
 
                     intSheetIndex++;
@@ -2807,7 +2809,7 @@ namespace EmployeeTracking.Controllers
 
         [HttpGet]
         public ActionResult Leave()
-        {
+       {
             LeaveViewmodel rptmodel = new LeaveViewmodel();
             rptmodel.LeaveResult = new List<Models.Leave>();
             LeaveLastResult = null;

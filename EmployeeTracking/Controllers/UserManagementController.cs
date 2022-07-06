@@ -17,7 +17,7 @@ namespace EmployeeTracking.Controllers
 {
     //[Authorize]
     //[AdminAuthorization]
-    [SessionExpireFilter]
+   // [SessionExpireFilter]
     public class UserManagementController : Controller
     {
         public ActionResult Index()
@@ -96,9 +96,7 @@ namespace EmployeeTracking.Controllers
             {
                 ViewBag.erMsg = "errorMsg('User Could not be Created.')";
             }
-
             TempData["erMsg"] = ViewBag.erMsg;
-            
             return RedirectToAction("UserProfile", new { id = userId});
         }
         
@@ -163,7 +161,6 @@ namespace EmployeeTracking.Controllers
                         else
                         {
                             //msg += "Empty Records Detected End of File";
-
                             break;
                         }
                         
@@ -345,39 +342,39 @@ namespace EmployeeTracking.Controllers
 
                             if (UserId != null && !UserId.Contains("error_"))
                             {
-                                //EmployeeTracking.Models.UserProfile userpr = new Models.UserProfile
-                                //{
-                                //    Id = UserId,
-                                //    FirstName = FirstName,
-                                //    Age = Age,
-                                //    EmployeeId = EmpId,
-                                //    DateOfBirth = DOB,
-                                //    Gender = Gender,
-                                //    MaritalStatus = Marital,
-                                //    NICNo = NIC,
-                                //    Image = "Content/ProfileImages/" + EmpId + ".png",
-                                //    Remarks = remarks
-                                //};
+                                EmployeeTracking.Models.UserProfile userpr = new Models.UserProfile
+                                {
+                                    Id = UserId,
+                                    FirstName = FirstName,
+                                    Age = Age,
+                                    EmployeeId = EmpId,
+                                    DateOfBirth = DOB,
+                                    Gender = Gender,
+                                    MaritalStatus = Marital,
+                                    NICNo = NIC,
+                                    Image = "Content/ProfileImages/" + EmpId + ".png",
+                                    Remarks = remarks
+                                };
 
-                                //um.UpdateUserProfile(UserId, Level, new UserProfileViewModel { UserProfiles = userpr });
+                                um.UpdateUserProfile(UserId, Level, new UserProfileViewModel { UserProfiles = userpr });
 
-                                //ApplicationUser apu = new ApplicationUser();
-                                //apu.Id = UserId;
-                                //apu.MobileNumber = MobileNo;
-                                //apu.PhoneNumber = FixedNo;
-                                //apu.Email = Email;
-                                //apu.MobileAccount = MobileAccount;
-                                //apu.Address = Address;
-                                //um.UpdateContactInfo(new UserProfileViewModel { ApplicationUser = apu });
+                                ApplicationUser apu = new ApplicationUser();
+                                apu.Id = UserId;
+                                apu.MobileNumber = MobileNo;
+                                apu.PhoneNumber = FixedNo;
+                                apu.Email = Email;
+                                apu.MobileAccount = MobileAccount;
+                                apu.Address = Address;
+                                um.UpdateContactInfo(new UserProfileViewModel { ApplicationUser = apu });
 
-                                //EducationalInfo edu = new EducationalInfo
-                                //{
-                                //    Id = UserId,
-                                //    Secondary = SecnEdu,
-                                //    Other = HighEdu,
-                                //};
+                                EducationalInfo edu = new EducationalInfo
+                                {
+                                    Id = UserId,
+                                    Secondary = SecnEdu,
+                                    Other = HighEdu,
+                                };
 
-                                //um.UpdateEducationalInfo(UserId, new UserProfileViewModel { EducationalInfos = edu });
+                                um.UpdateEducationalInfo(UserId, new UserProfileViewModel { EducationalInfos = edu });
 
                                 EmployeementInfo empl = new EmployeementInfo
                                 {
@@ -388,8 +385,8 @@ namespace EmployeeTracking.Controllers
                                     Section = Section,
                                     PresentReportingLocation = Location,
                                     Designation = Designation,
-                                    WorkOnSaturday = wks
-                                    //DivisionCode = divCode
+                                    WorkOnSaturday = wks,
+                                    DivisionCode = divCode
                                 };
 
                                 um.UpdateEmployeement(UserId, new UserProfileViewModel { EmployeementInfos = empl });

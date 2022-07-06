@@ -39,44 +39,28 @@
 </head>
 <body class="hold-transition login-page" style="overflow: hidden;">
     <div class="login-box">
-        <div class="login-logo" style="margin-bottom: 0px;">
-            <a href="http://sems.siot.lk/">
-                <img src="~/Content/Images/management systems-web logo.png" style="width: 100%; margin-top: -38px;" /></a>
-                <font face="Britannic Bold"><b><h3> Civil Engineering </h3></b> </font></div>
-        <div class="login-box-body">
-            <p class="login-box-msg">Sign in to start your session</p>
 
+        <div class="login-logo" style="margin-bottom: 0px;">
+            <img src="~/Content/Images/management systems-web logo.png" style="width: 100%; margin-top: -18px;" />
+        </div>
+        <div class="login-box-body" style="width: 508px; align-content: center; margin-left: -75px;">
+            <p class="login-box-msg">Select your sector to start your session</p>
             @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
             {
-                @Html.AntiForgeryToken()
-
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group has-feedback">
-                    @*<input name="txtUserName" type="text" class="form-control" placeholder="Username">*@
-                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Username" })
-                    @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
-                    <span class="glyphicon glyphicon-user form-control-feedback"></span>
-                </div>
-                <div class="form-group has-feedback">
-                    @*<input type="password" class="form-control" placeholder="Password">*@
-                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Password" })
-                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                </div>
                 <div class="row" style="text-align:right;">
                     <div class="col-xs-12">
-                        <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
                         <br />
-                        @*<a href="http://sems.road.siot.lk/"><img src="~/Content/Images/road.png" data-toggle="tooltip" data-placement="top" title="Roads & Bridges" style="width: 60px; height: 60px; border: 3px groove silver;" class="btn btn-default"></a>
-                        <a href="http://sems.civil.siot.lk/"><img src="~/Content/Images/engineers.png" data-toggle="tooltip" data-placement="top" title="Civil Engineering" style="width: 60px; height: 60px; border: 3px groove silver;" class="btn btn-default" /></a>
-                        <a href="http://sems.water.siot.lk/"><img src="~/Content/Images/water-droplet.png" data-toggle="tooltip" data-placement="top" title="Water & Sewerage" style="width: 60px; height: 60px; border: 3px groove silver;" class="btn btn-default" /></a>
-                        <a href="http://sems.ho.siot.lk/"><img src="~/Content/Images/office-building.png" data-toggle="tooltip" data-placement="top" title="Sierra Head Office" style="width: 60px; height: 60px; border: 3px groove blue;" class="btn btn-default" /></a>*@
+                        <a href="http://sems.siot.lk/"><img src="~/Content/Images/telecommunications.png" data-toggle="tooltip" data-placement="top" title="Telecommunication" style="width: 90px; height: 90px; border: 3px groove silver;" class="btn btn-default" /></a>
+                        <a href="http://sems.road.siot.lk/"><img src="~/Content/Images/road.png" data-toggle="tooltip" data-placement="top" title="Roads & Bridges" style="width: 90px; height: 90px; border: 3px groove silver;" class="btn btn-default"></a>
+                        <a href="http://sems.civil.siot.lk/"><img src="~/Content/Images/engineers.png" data-toggle="tooltip" data-placement="top" title="Civil Engineering" style="width: 90px; height: 90px; border: 3px groove silver;" class="btn btn-default" /></a>
+                        <a href="http://sems.water.siot.lk/"><img src="~/Content/Images/water-droplet.png" data-toggle="tooltip" data-placement="top" title="Water & Sewerage" style="width: 90px; height: 90px; border: 3px groove silver;" class="btn btn-default" /></a>
+                        <a href="http://sems.ho.siot.lk/"><img src="~/Content/Images/office-building.png" data-toggle="tooltip" data-placement="top" title="Sierra Head Office" style="width: 90px; height: 90px; border: 3px groove silver;" class="btn btn-default" /></a>
                     </div>
                 </div>
             }
 
             @*<a href="#">I forgot my password</a><br>
-                <a href="register.html" class="text-center">Register a new membership</a>*@
+        <a href="register.html" class="text-center">Register a new membership</a>*@
         </div>
 
         <div style="text-align: center;">

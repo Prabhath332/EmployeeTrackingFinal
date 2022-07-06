@@ -2,17 +2,38 @@
     ViewBag.Title = "InOut";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
-    var divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
 
+    EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
     EmployeeTracking.App_Codes._reports rpt = new EmployeeTracking.App_Codes._reports();
-    var siteLst = rpt.GetAllSiteLocations();
+
+
+
+    List<EmployeeTracking.Models.Project> divLst = new List<EmployeeTracking.Models.Project>();
+    List<EmployeeTracking.Models.SiteLocation> siteLst = new List<EmployeeTracking.Models.SiteLocation>();
+
+
+    if (User.IsInRole("Site Admin"))
+    {
+        divLst = pr.GetProjectsById(Convert.ToInt32(Session["DivisionId"].ToString()));
+        siteLst = pr.GetLocationsById(Session["Location"].ToString());
+    }
+    else
+    {
+        divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
+        siteLst = rpt.GetAllSiteLocations();
+    }
+
+
 
     var DivisionCodes = rpt.GetdivisionCodes();
-
     var cult = System.Globalization.CultureInfo.CurrentCulture;
+
+
 }
+
+
 @model EmployeeTracking.Models.LeaveViewmodel
+
 <link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
 
 <link href="~/Content/Printing.css" rel="stylesheet" />
@@ -24,29 +45,55 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>Division Name</label>
+
                             <select id="Division" name="Division" class="form-control">
-                                <option value="0" selected>[All Divisions]</option>
-                                @foreach (var item in divLst)
+                                @if (User.IsInRole("Site Admin"))
                                 {
-                                    <option value="@item.Id">@item.ProjectName</option>
+                                    foreach (var item in divLst)
+                                    {
+                                        <option value="@item.Id">@item.ProjectName</option>
+                                    }
                                 }
+                                else
+                                {
+                                    <option value="0" selected>[All Divisions]</option>
+                                    foreach (var item in divLst)
+                                    {
+                                        <option value="@item.Id">@item.ProjectName</option>
+                                    }
+                                }
+
                             </select>
                             @Html.HiddenFor(m => m.DivisionName)
                         </div>
                     </div>
+
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>Location</label>
                             <select id="Location" name="Location" class="form-control">
-                                <option value="0" selected>[All Locations]</option>
-                                @foreach (var item in siteLst)
+
+                                @if (User.IsInRole("Site Admin"))
                                 {
-                                    <option value="@item.Id">@item.Location</option>
+                                    foreach (var item in siteLst)
+                                    {
+                                        <option value="@item.Id">@item.Location</option>
+                                    }
                                 }
+                                else
+                                {
+                                    <option value="0" selected>[All Locations]</option>
+                                    foreach (var item in siteLst)
+                                    {
+                                        <option value="@item.Id">@item.Location</option>
+                                    }
+                                }
+
                             </select>
                             @Html.HiddenFor(m => m.LocationName)
                         </div>
                     </div>
+
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>Division Code</label>
@@ -65,15 +112,16 @@
                             <label>Status</label>
                             <select id="CboStatus" name="Status" class="form-control">
                                 <option value="All" selected>[All Status]</option>
-                                <option value="true" >Approved</option>
-                                <option value="pending" >Pending</option>
-                                <option value="false" >Rejected</option>
+                                <option value="true">Approved</option>
+                                <option value="pending">Pending</option>
+                                <option value="false">Rejected</option>
                                 <option value="cancel">Cancel</option>
                             </select>
                             @Html.HiddenFor(m => m.StatusView)
                         </div>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-md-3">
                         <div class="row">
@@ -94,13 +142,13 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-md-11">
                         <div class="form-group">
                             <label class="pad-right-15">@Html.CheckBoxFor(m => m.Leavetype) Leave Type</label>
                             <label class="pad-right-15">@Html.CheckBoxFor(m => m.LeaveUnit) Leave Unit</label>
                             <label class="pad-right-15">@Html.CheckBoxFor(m => m.RequestDate) Request Date</label>
-
                             <label class="pad-right-15">@Html.CheckBoxFor(m => m.LFrom) From</label>
                             <label class="pad-right-15">@Html.CheckBoxFor(m => m.LTo) To</label>
                             <label class="pad-right-15">@Html.CheckBoxFor(m => m.Days) Days</label>
@@ -113,13 +161,14 @@
                     </div>
                     <div class="col-md-1 text-right">
                         <div class="form-group">
-                            <button type="submit" class="btn btn-primary" name="view" id="view">View</button> 
+                            <button type="submit" class="btn btn-primary" name="view" id="view">View</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+
     <div class="panel">
         <div class="panel-body">
             <div class="col-md-12">
@@ -128,12 +177,12 @@
                         <div class="col-md-12">
                             <div class="rptrebbon">
                                 <button type="button" class="btn btn-warning btn-sm" name="print" id="print">Print/PDF</button>
-                                <button class="btn btn-success btn-sm" type="submit" name="excel" id="excel">Excel</button>
+                             @*   <button class="btn btn-success btn-sm" type="submit" name="excel" id="excel">Excel</button>*@
                             </div>
                             @*<button class="btn btn-primary" type="button" name="word" id="word">Word</button>*@
                         </div>
                     </div>
-                    <div class="form-group reportbody">  
+                    <div class="form-group reportbody">
                         <div id="printPriview">
                             <table class="reportTable" id="report">
                                 <thead>
@@ -169,10 +218,10 @@
                                     </tr>
 
                                     <tr>
-                                        <th rowspan="5"  colspan="2"> 
-                                            <img src="~/Content/Images/sierrs.png" height="100"/>
+                                        <th rowspan="5" colspan="2">
+                                            <img src="~/Content/Images/sierrs.png" height="100" />
                                         </th>
-                                        <th colspan="2">@((Model.DivisionName == null) ? "[All Divisions]" : Model.DivisionName)</th> 
+                                        <th colspan="2">@((Model.DivisionName == null) ? "[All Divisions]" : Model.DivisionName)</th>
                                         <th></th>
                                         <th></th>
                                         <th></th>
@@ -181,13 +230,13 @@
                                         <th></th>
                                         <th></th>
                                         <th></th>
-                                        <th></th> 
+                                        <th></th>
                                         <th></th>
                                         <th></th>
                                     </tr>
                                     <tr>
-                                        
-                                        <th colspan="2">@((Model.LocationName == null ? "[All Locations]" : Model.LocationName))</th>  
+
+                                        <th colspan="2">@((Model.LocationName == null ? "[All Locations]" : Model.LocationName))</th>
                                         <th></th>
                                         <th></th>
                                         <th></th>
@@ -198,10 +247,10 @@
                                         <th></th>
                                         <th></th>
                                         <th></th>
-                                         
+
                                     </tr>
                                     <tr>
-                                         
+
                                         <th colspan="2">@((Model.DivisionCode == "0" || Model.DivisionCode == null) ? "[All Division Codes]" : Model.DivisionCode)</th>
                                         <th></th>
                                         <th></th>
@@ -213,11 +262,11 @@
                                         <th></th>
                                         <th></th>
                                         <th></th>
-                                         
+
                                     </tr>
                                     <tr>
-                                         
-                                        <th colspan="2">@((Model.Status == null ? "[All Status]" : Model.StatusView))</th> 
+
+                                        <th colspan="2">@((Model.Status == null ? "[All Status]" : Model.StatusView))</th>
                                         <th></th>
                                         <th></th>
                                         <th></th>
@@ -228,7 +277,7 @@
                                         <th></th>
                                         <th></th>
                                         <th></th>
-                                         
+
                                     </tr>
                                     <tr>
                                         <th colspan="2">@((Model.From.ToString("MM/dd/yyyy")== "01/01/0001")?"": Model.From.ToString("MM/dd/yyyy")) - @((Model.To.ToString("MM/dd/yyyy")== "01/01/0001")?"": Model.To.ToString("MM/dd/yyyy"))</th>
@@ -242,7 +291,7 @@
                                         <th></th>
                                         <th></th>
                                         <th></th>
-                                         
+
                                     </tr>
                                     <tr>
                                         <th> &nbsp; </th>
@@ -257,7 +306,7 @@
                                         <th></th>
                                         <th></th>
                                         <th></th>
-                                         
+
                                     </tr>
 
                                     <tr class="heattext">
@@ -329,7 +378,7 @@
                                             {
                                                 <th>Remark</th>
                                             }
-                                        } 
+                                        }
                                     </tr>
                                 </thead>
 
@@ -356,115 +405,115 @@
                                                 {
                                                     <tr>
                                                         @*<td>&nbsp;</td>
-                                                        <td>&nbsp;</td>
-                                                        <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            @{
+                                                                if (Model.Leavetype)
+                                                                {
+                                                                    <td>&nbsp;</td>
+                                                                }
+                                                                if (Model.LeaveUnit)
+                                                                {
+                                                                    <td>&nbsp;</td>
+                                                                }
+                                                                if (Model.RequestDate)
+                                                                {
+                                                                    <td>&nbsp;</td>
+                                                                }
+                                                                if (Model.LFrom)
+                                                                {
+                                                                    <td>&nbsp;</td>
+                                                                }
+                                                                if (Model.LTo)
+                                                                {
+                                                                    <td>&nbsp;</td>
+                                                                }
+                                                                if (Model.Days)
+                                                                {
+                                                                    <td>&nbsp;</td>
+                                                                }
+                                                                if (Model.ReasonforLeave)
+                                                                {
+                                                                    <td>&nbsp;</td>
+                                                                }
+                                                                if (Model.IsApproved)
+                                                                {
+                                                                    <td>&nbsp;</td>
+                                                                }
+                                                                if (Model.Approvedby)
+                                                                {
+                                                                    <td>&nbsp;</td>
+                                                                }
+                                                            }*@
+                                                    </tr>
+
+                                                }
+                                                currentcount = 38;
+                                            }
+                                            else
+                                            {
+                                                if (datacount > 0)
+                                                {
+                                                    int DataIndex = i;
+                                                    <tr>
+
+                                                        <td>@lst[DataIndex].EmployeeNumber</td>
+                                                        <td>@lst[DataIndex].EmployeeName</td>
+                                                        <td>@lst[DataIndex].Designation</td>
+
                                                         @{
                                                             if (Model.Leavetype)
                                                             {
-                                                                <td>&nbsp;</td>
+                                                                <td>@lst[DataIndex].Leavetype</td>
                                                             }
                                                             if (Model.LeaveUnit)
                                                             {
-                                                                <td>&nbsp;</td>
+                                                                <td>@lst[DataIndex].LeaveUnit</td>
                                                             }
                                                             if (Model.RequestDate)
                                                             {
-                                                                <td>&nbsp;</td>
+                                                                <td>@lst[DataIndex].RequestDate</td>
                                                             }
                                                             if (Model.LFrom)
                                                             {
-                                                                <td>&nbsp;</td>
+                                                                <td>@lst[DataIndex].From</td>
                                                             }
                                                             if (Model.LTo)
                                                             {
-                                                                <td>&nbsp;</td>
+                                                                <td>@lst[DataIndex].To</td>
                                                             }
                                                             if (Model.Days)
                                                             {
-                                                                <td>&nbsp;</td>
+                                                                <td>@lst[DataIndex].Days</td>
                                                             }
                                                             if (Model.ReasonforLeave)
                                                             {
-                                                                <td>&nbsp;</td>
+                                                                <td>@lst[DataIndex].ReasonforLeave</td>
                                                             }
                                                             if (Model.IsApproved)
                                                             {
-                                                                <td>&nbsp;</td>
+                                                                <td>@lst[DataIndex].IsApproved</td>
                                                             }
                                                             if (Model.Approvedby)
                                                             {
-                                                                <td>&nbsp;</td>
+                                                                <td>@lst[DataIndex].Approvedby</td>
                                                             }
-                                                        }*@
-                                                    </tr>
-
-                                                                }
-                                                                currentcount = 38;
-                                                            }
-                                                            else
+                                                            if (Model.SuperVisor)
                                                             {
-                                                                if (datacount > 0)
-                                                                {
-                                                                    int DataIndex = i;
-                                                                    <tr>
+                                                                <td>@lst[DataIndex].Supervisor</td>
+                                                            }
+                                                            if (Model.Comment)
+                                                            {
+                                                                <td>@lst[DataIndex].Remark</td>
+                                                            }
+                                                        }
+                                                    </tr>
+                                                }
 
-                                                                        <td>@lst[DataIndex].EmployeeNumber</td>
-                                                                        <td>@lst[DataIndex].EmployeeName</td>
-                                                                        <td>@lst[DataIndex].Designation</td>
+                                                currentcount++;
+                                            }
 
-                                                                        @{
-                                                                            if (Model.Leavetype)
-                                                                            {
-                                                                                <td>@lst[DataIndex].Leavetype</td>
-                                                                            }
-                                                                            if (Model.LeaveUnit)
-                                                                            {
-                                                                                <td>@lst[DataIndex].LeaveUnit</td>
-                                                                            }
-                                                                            if (Model.RequestDate)
-                                                                            {
-                                                                                <td>@lst[DataIndex].RequestDate</td>
-                                                                            }
-                                                                            if (Model.LFrom)
-                                                                            {
-                                                                                <td>@lst[DataIndex].From</td>
-                                                                            }
-                                                                            if (Model.LTo)
-                                                                            {
-                                                                                <td>@lst[DataIndex].To</td>
-                                                                            }
-                                                                            if (Model.Days)
-                                                                            {
-                                                                                <td>@lst[DataIndex].Days</td>
-                                                                            }
-                                                                            if (Model.ReasonforLeave)
-                                                                            {
-                                                                                <td>@lst[DataIndex].ReasonforLeave</td>
-                                                                            }
-                                                                            if (Model.IsApproved)
-                                                                            {
-                                                                                <td>@lst[DataIndex].IsApproved</td>
-                                                                            }
-                                                                            if (Model.Approvedby)
-                                                                            {
-                                                                                <td>@lst[DataIndex].Approvedby</td>
-                                                                            }
-                                                                            if (Model.SuperVisor)
-                                                                            {
-                                                                                <td>@lst[DataIndex].Supervisor</td>
-                                                                            }
-                                                                            if (Model.Comment)
-                                                                            {
-                                                                                <td>@lst[DataIndex].Remark</td>
-                                                                            } 
-                                                                        }
-                                                                    </tr>
-                                                                                    }
-
-                                                                                    currentcount++;
-                                                                                }
-
-                                                                            }
+                                        }
                                     }
                                 </tbody>
                                 <tfoot>
@@ -501,7 +550,7 @@
 
 @section scripts{
     <script src="~/Scripts/reports.js"></script>
-     
-      
+
+
 }
 

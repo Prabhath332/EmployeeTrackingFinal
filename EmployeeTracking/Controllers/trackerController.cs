@@ -632,6 +632,19 @@ namespace EmployeeTracking.Controllers {
             return new _leavs().GetAboveUsers(userId, search);
         }
 
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+        [HttpGet]
+        public List<messageusers> GetDivision(string userId, string search)
+        {
+            return new _leavs().GetDivision(userId, search);
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+
         [HttpGet]
         public List<LeaveHistory> getUsersLeaves(String UserId) {
             return new _leavs().GetUserRequestLeave(UserId);

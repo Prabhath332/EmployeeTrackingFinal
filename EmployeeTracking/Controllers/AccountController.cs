@@ -62,6 +62,13 @@ namespace EmployeeTracking.Controllers
         }
 
         [AllowAnonymous]
+        public ActionResult Index2(string returnUrl)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
+
+        [AllowAnonymous]
         public ActionResult PassReset()
         {
             _usermanager um = new App_Codes._usermanager();
@@ -113,18 +120,24 @@ namespace EmployeeTracking.Controllers
                     {
                         Session["DivisionId"] = "0";
                         Session["CompanyId"] = "0";
+                        Session["Location"] = "0";
                     }
                     else
                     {
                         if(parm.Count > 1)
                         {
-                            Session["DivisionId"] = um.UserParm(model.UserName)[1];
-                            Session["CompanyId"] = um.UserParm(model.UserName)[2];
+                            //Session["DivisionId"] = um.UserParm(model.UserName)[1];
+                            //Session["CompanyId"] = um.UserParm(model.UserName)[2];
+
+                            Session["DivisionId"] = parm[1];
+                            Session["CompanyId"] = parm[2];
+                            Session["Location"] = parm[3];
                         }
                         else
                         {
                             Session["DivisionId"] = 0;
                             Session["CompanyId"] = 0;
+                            Session["Location"] = 0;
                         }
                                                 
                     }

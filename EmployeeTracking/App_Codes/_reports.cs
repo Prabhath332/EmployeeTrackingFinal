@@ -559,7 +559,6 @@ namespace EmployeeTracking.App_Codes
                             Leaves.Add(lv);
                         }
                     }
-
                     return Leaves.OrderBy(x => x.EmployeeNumber).ToList();
                 }
             }
@@ -819,7 +818,8 @@ namespace EmployeeTracking.App_Codes
                 }
 
                 var leaves = _leaves.GetLeaves();
-                var noPayLeaves = db.NoPayLeaves.ToList();
+                var abc = db.NoPayLeaves.ToList();
+                var noPayLeaves = abc;
 
                 foreach (var item in empInfo)
                 {

@@ -9,7 +9,7 @@ using System.Web.Mvc;
 namespace EmployeeTracking.Controllers
 {
     [Authorize]
-    [SessionExpireFilter]
+  //  [SessionExpireFilter]
     public class AttendanceController : Controller
     {
         // GET: Attendance
@@ -28,7 +28,9 @@ namespace EmployeeTracking.Controllers
             MyLeavesViewModel vm = new Models.MyLeavesViewModel();
             vm.LeaveTypes = lv.GetLeaves();
             vm.UserLeaves = lv.GetUserLeaves(userId, DateTime.Now.Year);
+
             vm.Supervisors = lv.GetAboveUsers(userId);
+
             vm.MyLeaveHistory = lv.GetLeaveHistory(userId, "0", DateTime.Now.Year);
             vm.RejectedLeaves = lv.GetRejectedLeaves(userId);
             return View(vm);

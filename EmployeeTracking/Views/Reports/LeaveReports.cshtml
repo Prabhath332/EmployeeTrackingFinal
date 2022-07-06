@@ -3,13 +3,40 @@
     ViewBag.Title = "Leave Reports";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
+    //EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
+    //var divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
+
+
+    //EmployeeTracking.App_Codes._reports rpt = new EmployeeTracking.App_Codes._reports();
+    //var siteLst = rpt.GetAllSiteLocations();
+
+
     EmployeeTracking.App_Codes._projects pr = new EmployeeTracking.App_Codes._projects();
-    var divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
-
-
     EmployeeTracking.App_Codes._reports rpt = new EmployeeTracking.App_Codes._reports();
-    var siteLst = rpt.GetAllSiteLocations();
+
+
+
+    List<EmployeeTracking.Models.Project> divLst = new List<EmployeeTracking.Models.Project>();
+    List<EmployeeTracking.Models.SiteLocation> siteLst = new List<EmployeeTracking.Models.SiteLocation>();
+
+
+    if (User.IsInRole("Site Admin"))
+    {
+        divLst = pr.GetProjectsById(Convert.ToInt32(Session["DivisionId"].ToString()));
+        siteLst = pr.GetLocationsById(Session["Location"].ToString());
+    }
+    else
+    {
+        divLst = pr.GetProjects(Convert.ToInt32(Session["CompanyId"].ToString()));
+        siteLst = rpt.GetAllSiteLocations();
+    }
+
+
+    var DivisionCodes = rpt.GetdivisionCodes();
+    var cult = System.Globalization.CultureInfo.CurrentCulture;
 }
+
+
 <link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
 <section class="content-header">
     <h1>
@@ -47,26 +74,23 @@
                                 <div class="form-group">
                                     <label>Division</label>
                                     <select id="ddlDivision" name="ddlDivision" class="form-control">
-                                        <option value="0" selected>[All Divisions]</option>
-                                        @foreach (var item in divLst)
+                                        @if (User.IsInRole("Site Admin"))
                                         {
-                                            <option value="@item.Id" selected>@item.ProjectName</option>
+                                            foreach (var item in divLst)
+                                            {
+                                                <option value="@item.Id">@item.ProjectName</option>
+                                            }
                                         }
-                                    </select>
-                                </div>
-                            </div>
+                                        else
+                                        {
+                                            <option value="0" selected>[All Divisions]</option>
 
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Location</label>
-                                    <select id="Location" name="Location" class="form-control">
-                                        <option value="0" selected>[All Locations]</option>
-                                        @foreach (var item in siteLst)
-                                        {
-                                            <option value="@item.Id">@item.Location</option>
+                                            foreach (var item in divLst)
+                                            {
+                                                <option value="@item.Id">@item.ProjectName</option>
+                                            }
                                         }
                                     </select>
-                                   @* @Html.HiddenFor(m => m.LocationName)*@
                                 </div>
                             </div>
 
@@ -99,31 +123,25 @@
                                 <div class="form-group">
                                     <label>Division</label>
                                     <select id="ddlDivisionDetails" name="ddlDivisionDetails" class="form-control">
-                                        <option value="0" selected>[All Divisions]</option>
-                                        @foreach (var item in divLst)
+                                        @if (User.IsInRole("Site Admin"))
                                         {
-                                            <option value="@item.Id" selected>@item.ProjectName</option>
+                                            foreach (var item in divLst)
+                                            {
+                                                <option value="@item.Id">@item.ProjectName</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="0" selected>[All Divisions]</option>
+
+                                            foreach (var item in divLst)
+                                            {
+                                                <option value="@item.Id">@item.ProjectName</option>
+                                            }
                                         }
                                     </select>
                                 </div>
                             </div>
-
-
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Location</label>
-                                    <select id="Location" name="Location" class="form-control">
-                                        <option value="0" selected>[All Locations]</option>
-                                        @foreach (var item in siteLst)
-                                        {
-                                            <option value="@item.Id">@item.Location</option>
-                                        }
-                                    </select>
-                                    @*@Html.HiddenFor(m => m.LocationName)*@
-                                </div>
-                            </div>
-
-
                             <div class="col-md-3" style="text-align:right; margin-top:20px;">
                                 <button id="btnDownloadReportDetails" type="submit" class="btn btn-primary"><i class="fa fa-download"></i>&nbsp;Download</button>
                             </div>

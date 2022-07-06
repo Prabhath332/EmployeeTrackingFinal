@@ -84,7 +84,6 @@ namespace EmployeeTracking.App_Codes
                             lst.Add(new Models.UserLeavesViewModel { UserId = item.UserId, LeaveType = item.LeaveType1.LeaveType1, LeaveId = Convert.ToInt32(item.LeaveType), AllocatedCount = item.AllocatedCount, RemainingCount = item.RemainingCount, Year = Year, Username = users.Where(x => x.Id == item.UserId).FirstOrDefault().FirstName });
                         }
                         //var fname = users.Where(x => x.Id == "e54fc979-b48f-4692-ad94-3b7bddac8c49").FirstOrDefault();
-
                     }
 
 
@@ -1622,14 +1621,15 @@ namespace EmployeeTracking.App_Codes
                             //No Pay Leaves
                             if (userLeave.RemainingCount <= 0)
                             {
-                                db.NoPayLeaves.Add(new Employee_NoPay_Leaves { Request_Id = leaveHistory.Id, No_Pay_Count = Convert.ToDouble(dayCount) });
+                                db.NoPayLeaves.Add(new Employee_NoPay_Leaves {  Request_Id = leaveHistory.Id, No_Pay_Count = Convert.ToDouble(dayCount) });
+
                                 db.SaveChanges();
                             }
                             else if (userLeave.RemainingCount < dayCount)
                             {
                                 var noPayOnlyCount = dayCount - userLeave.RemainingCount;
 
-                                db.NoPayLeaves.Add(new Employee_NoPay_Leaves { Request_Id = leaveHistory.Id, No_Pay_Count = Convert.ToDouble(noPayOnlyCount) });
+                                db.NoPayLeaves.Add(new Employee_NoPay_Leaves {  No_Pay_Count = Convert.ToDouble(noPayOnlyCount) });
                                 db.SaveChanges();
                             }
 
@@ -1820,7 +1820,7 @@ namespace EmployeeTracking.App_Codes
             }
         }
 
-        public List<messageusers> GetAboveUsers(string UserId, string Search)
+        public List<messageusers> GetAboveUsers1(string UserId, string Search)
         {
             try
             {
@@ -1856,6 +1856,101 @@ namespace EmployeeTracking.App_Codes
                 return new List<messageusers>();
             }
         }
+
+
+
+
+
+        public List<messageusers> GetAboveUsers(string UserId, string Search)
+        {
+            try
+            {
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    //var Currentuser = UserManager.FindById(UserId);
+                    //int RolLevel = db.RoleLevels.Where(m => m.RoleId == CurrentuserRole.RoleId).FirstOrDefault().SortOrder;
+                    //if (RolLevel != 0)
+                    //{
+                    //    RolLevel--;
+                    //}
+                    //String NewRolLevelId = db.RoleLevels.Where(m => m.SortOrder == RolLevel).FirstOrDefault().RoleId;
+                    var employeeInfo = db.EmployeementInfos.FirstOrDefault(e => e.Id == UserId);
+
+                    var d = (from user in db.Users
+                             join profile in db.UserProfiles
+                             on user.Id equals profile.Id
+                             where user.Id == employeeInfo.SupervisorId
+                             select profile);
+
+                    List<messageusers> userlist = new List<messageusers>();
+                    foreach (var item in d)
+                    {
+                        messageusers model = new messageusers();
+                        model.UserId = item.Id;
+                        model.Name = item.FirstName + " " + item.LastName;
+                        userlist.Add(model);
+                    }
+                    return userlist;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return new List<messageusers>();
+            }
+        }
+
+
+
+
+
+        public List<messageusers> GetDivision(string UserId, string Search)
+        {
+            try
+            {
+                using (ApplicationDbContext db = new ApplicationDbContext())
+                {
+                    //var Currentuser = UserManager.FindById(UserId);
+                    //int RolLevel = db.RoleLevels.Where(m => m.RoleId == CurrentuserRole.RoleId).FirstOrDefault().SortOrder;
+                    //if (RolLevel != 0)
+                    //{
+                    //    RolLevel--;
+                    //}
+                    //String NewRolLevelId = db.RoleLevels.Where(m => m.SortOrder == RolLevel).FirstOrDefault().RoleId;
+
+                    var employeeInfo = db.EmployeementInfos.FirstOrDefault(e => e.Id == UserId);
+
+                    var d = (from user in db.Users
+                             join profile in db.UserProfiles
+                             on user.Id equals profile.Id
+                             where user.Id == employeeInfo.SupervisorId
+                             select profile);
+
+                    List<messageusers> userlist = new List<messageusers>();
+                    foreach (var item in d)
+                    {
+                        messageusers model = new messageusers();
+                        model.UserId = item.Id;
+                        model.Name = item.FirstName + " " + item.LastName;
+                        userlist.Add(model);
+                    }
+                    return userlist;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return new List<messageusers>();
+            }
+        }
+
+
+
+
+
+
+
+
 
         public List<LeaveHistory> GetUserRequestLeave(String UserId)
         {

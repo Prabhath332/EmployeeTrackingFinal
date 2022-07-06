@@ -71,10 +71,7 @@ namespace EmployeeTracking.Models
         public virtual DbSet<EmployeeTransfer> EmployeeTransfers { get; set; }
         public virtual DbSet<RejectedLeave> RejectedLeaves { get; set; }
         public virtual DbSet<SiteLocation> SiteLocations { get; set; }
-
         public virtual DbSet<Holiday> Holidays { get; set; }
-
         public virtual DbSet<Employee_NoPay_Leaves> NoPayLeaves { get; set; }
-
     }
 }

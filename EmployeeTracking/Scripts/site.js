@@ -288,7 +288,6 @@ $(document).ready(function () {
             getValue: "Name",
             theme: "square",
             list: {
-
                 onSelectItemEvent: function () {
                     $("#hfLeaveSupervisorId").val($("#txtSupervisor").getSelectedItemData().UserId);
                     $("#txtSupervisor").val($("#txtSupervisor").getSelectedItemData().Name);                    
@@ -299,6 +298,33 @@ $(document).ready(function () {
         $("#txtSupervisor").easyAutocomplete(options);
         $('div.easy-autocomplete').removeAttr('style');
     }
+
+    /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+    if ($("#txtDivision").length) {
+        var options = {
+            url: function (search) {
+                return url + "api/tracker/GetDivision?userId=" + $("#hfLeaveUserId").val() + "&search=" + search;
+            },
+
+            getValue: "Name",
+            theme: "square",
+            list: {
+                onSelectItemEvent: function () {
+                    $("#hfLeaveSupervisorId").val($("#txtDivision").getSelectedItemData().UserId);
+                    $("#txtDivision").val($("#txtDivision").getSelectedItemData().Name);
+                }
+            }
+        };
+
+        $("#txtDivision").easyAutocomplete(options);
+        $('div.easy-autocomplete').removeAttr('style');
+    }
+
+    /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+
+
 
     if ($(".supervisor").length) {
         var options = {
@@ -1517,6 +1543,12 @@ function calculateLeaveDays()
 $("#btnRequestInOut").click(function () {
     if ($(".form-control").val() == "") {
         errorMsg("All The Fields are Required");        
+    }
+    else if ($("#txtInReason").val() == "") {
+        errorMsg("Reason is Required");
+    }
+    else if ($("#txtOutReason").val() == "") {
+        errorMsg("Reason is Required");
     }
     else {
         $("#frmCorrectInOut").submit();

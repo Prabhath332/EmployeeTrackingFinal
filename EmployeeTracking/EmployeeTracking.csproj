@@ -1201,6 +1201,39 @@
     <Content Include="plugins\easy-autocomplete-1.3.5\maps\easy-autocomplete.themes.css.map" />
     <Content Include="plugins\easy-autocomplete-1.3.5\maps\easy-autocomplete.themes.min.css.map" />
     <Content Include="Content\TempFile\11342290-5867-4496-9778-4c203690336e.xlsx" />
+    <None Include="Properties\PublishProfiles\Default Settings.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings1.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings10.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings11.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings12.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings13.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings14.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings15.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings16.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings2.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings3.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings4.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings5.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings6.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings7.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings8.pubxml" />
+    <None Include="Properties\PublishProfiles\Default Settings9.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile10.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile11.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile12.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile13.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile14.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile15.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile2.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile3.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile4.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile5.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile6.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile7.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile8.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile9.pubxml" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
@@ -1288,6 +1321,7 @@
     <Content Include="Views\UserManagement\AttendanceHistory.cshtml" />
     <Content Include="Views\Reports\MonthlyBreackdownSummery.cshtml" />
     <Content Include="Views\Reports\MonthlyLeaveSummery.cshtml" />
+    <Content Include="Views\Account\Index2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

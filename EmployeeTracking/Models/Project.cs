@@ -15,7 +15,6 @@ namespace EmployeeTracking.Models
             //ProjectTeams = new HashSet<ProjectTeam>();
             //TeamMembers = new HashSet<TeamMember>();
         }
-
         public int Id { get; set; }
 
         [StringLength(200)]

@@ -147,7 +147,12 @@ namespace EmployeeTracking.App_Codes
 
             using (ApplicationDbContext db = new Models.ApplicationDbContext())
             {
-                var user = db.UserProfiles.Where(x => x.Id == userId).FirstOrDefault();
+                //var user = db.UserProfiles.Where(x => x.Id == userId).FirstOrDefault();
+
+                var  user = (from us in db.Users
+                            join emp in db.EmployeementInfos on us.Id equals emp.Id
+                            where us.UserName == Username
+                            select new { us, emp}).FirstOrDefault();
 
                 if(db.EmployeementInfos.Where(x => x.Id == userId).Count() > 0)
                 {
@@ -158,13 +163,13 @@ namespace EmployeeTracking.App_Codes
                     lst.Add(userId);
                     lst.Add(division.Division.ToString());
                     lst.Add(company.CompanyId.ToString());
+                    lst.Add(user.emp.PresentReportingLocation);
                 }
                 else
                 {
                     lst.Add(userId);
                 }
-                
-
+               
                 return lst;
             }
         }
@@ -1518,7 +1523,6 @@ namespace EmployeeTracking.App_Codes
                         roleLevel.CanViewAll = ViewAll;
                         db.SaveChanges();
                     }
-
                 }
             }
             catch (Exception er)
@@ -1756,7 +1760,7 @@ namespace EmployeeTracking.App_Codes
 
                         try
                         {
-                            prid = model.EmployeementInfos.Project.Id;
+                            prid = model.EmployeementInfos.Division.Value;
                         }
                         catch
                         {
@@ -1765,6 +1769,14 @@ namespace EmployeeTracking.App_Codes
 
                         model.EmployeementInfos.Id = UserId;
                         model.EmployeementInfos.Division = prid;
+                        employee.Division = model.EmployeementInfos.Division;
+                        //employee.Location = model.EmployeementInfos.Location;
+                        //employee.Section = model.EmployeementInfos.Section;
+                        //employee.SupervisorId = model.EmployeementInfos.SupervisorId;
+                        //employee.PresentReportingLocation = model.EmployeementInfos.PresentReportingLocation;
+                        //employee.Designation = model.EmployeementInfos.Designation;
+                        //employee.AppointmentDate = model.EmployeementInfos.AppointmentDate;
+
                         db.Entry(employee).CurrentValues.SetValues(model.EmployeementInfos);
                         db.SaveChanges();
                     }
